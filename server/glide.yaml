@@ -1,0 +1,37 @@
+package: git.ont.io/Onchain/CandyDrop
+import:
+- package: github.com/ontio/ontology-crypto
+  version: v1.0.4
+- package: github.com/ontio/ontology/
+  version: v1.7.0
+- package: github.com/urfave/cli
+- package: github.com/syndtr/goleveldb
+  subpackages:
+    - leveldb
+    - leveldb/errors
+    - leveldb/filter
+    - leveldb/iterator
+    - leveldb/opt
+    - leveldb/util
+- package: golang.org/x/net/
+  repo: https://github.com/golang/net.git
+- package: github.com/klaytn/klaytn
+  version: v1.1.1
+- package: github.com/ethereum/go-ethereum
+  version: v1.8.23
+
+- package: google.golang.org/appengine
+  repo: https://github.com/golang/appengine
+  vcs: git
+  subpackages:
+  - cloudsql
+
+ignore:
+  - crypto/ed25519
+  - russross/blackfriday/v2
+  - github.com\russross\blackfriday\v2
+  - github.com/russross/blackfriday/v2
+  - github.com\allegro\bigcache\v2\queue
+
+
+

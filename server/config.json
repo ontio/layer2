@@ -1,0 +1,10 @@
+{
+  "log_level": 2,
+  "rest_port": 30334,
+  "version": "1.0.0",
+  "http_max_connections":10000,
+  "explorerdb_url":"127.0.0.1:3306",
+  "explorerdb_user":"root",
+  "explorerdb_password":"root1234",
+  "explorerdb_name":"layer2"
+}

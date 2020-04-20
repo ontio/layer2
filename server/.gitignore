@@ -1,0 +1,10 @@
+# misc
+.idea/
+db
+logout
+wallet.dat
+wallets/ont
+Password/
+airdrop_result/
+vendor/
+glide.lock
