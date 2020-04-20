@@ -1,0 +1,39 @@
+{
+    "home": {
+        "selectWallet": "Select wallet",
+        "selectedWallet": "Your wallet address: ",
+        "offchainTip": "Off-chain Tokens (Transfer without fee)",
+        "txRecords": "Transaction Records",
+        "onchainTip": "On-chain Tokens",
+        "currentNetwork": "Network",
+        "getTestCoins": "Get Testnet Tokens",
+        "receive": "Receive",
+        "send": "Send",
+        "convert": "Convert",
+        "transferRecords": "Transfer records",
+        "depositRecords": "Deposit records",
+        "withdrawRecords": "Withdraw records",
+        "back": "Back",
+        "selectWalletFile": "Select Ontology wallet file",
+        "clickSelect": "Select",
+        "inputPassword": "Enter wallet password",
+        "cancel":"Cancel",
+        "ok": "Ok",
+        "hasSelect": "Your wallet address",
+        "receiveTokens": "Receive",
+        "decryptWallet": "Decrypt wallet",
+        "sendTokens": "Send",
+        "submit": "Submit",
+        "convertTokens": "Convert tokens"
+    },
+    "send": {
+        "amount": "Amount",
+        "token": "Token",
+        "to": "To"
+    },
+    "convert": {
+        "from": "From",
+        "to": "To",
+        "amount": "Amount"
+    }
+}

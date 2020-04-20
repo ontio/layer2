@@ -1,0 +1,39 @@
+{
+    "home": {
+        "selectWallet": "选择钱包",
+        "selectedWallet": "已选择的钱包地址: ",
+        "offchainTip": "链下代币 (转账无需手续费)",
+        "txRecords": "交易记录",
+        "onchainTip": "链上代币",
+        "currentNetwork": "当前网络",
+        "getTestCoins": "获取测试网代币",
+        "receive": "接收",
+        "send": "发送",
+        "convert": "转换",
+        "transferRecords": "转账记录",
+        "depositRecords": "充值记录",
+        "withdrawRecords": "提取记录",
+        "back": "返回",
+        "selectWalletFile": "选择Ontology钱包文件",
+        "clickSelect": "点击选择",
+        "inputPassword": "输入钱包密码",
+        "cancel":"取消",
+        "ok": "确定",
+        "hasSelect": "已选择钱包地址",
+        "receiveTokens": "接收代币",
+        "decryptWallet": "解密钱包",
+        "sendTokens": "发送代币",
+        "submit": "提交",
+        "convertTokens": "转换代币"
+    },
+    "send": {
+        "amount": "金额",
+        "token": "选择代币",
+        "to": "接收方"
+    },
+    "convert": {
+        "from": "转换前",
+        "to": "转换后",
+        "amount": "金额"
+    }
+}
