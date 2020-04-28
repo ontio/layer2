@@ -21,7 +21,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"github.com/ontio/ontology-crypto/keypair"
-	ontology_go_sdk "github.com/ontio/layer2/layer2-go-sdk"
+	ontology_go_sdk "github.com/ontio/layer2/go-sdk"
 	scomm "github.com/ontio/layer2/go-sdk/common"
 	"github.com/ontio/layer2/go-sdk/utils"
 	"github.com/ontio/layer2/node/common"
