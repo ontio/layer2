@@ -15,12 +15,11 @@ require (
 	github.com/itchyny/base58-go v0.1.0
 	github.com/ontio/ontology-crypto v1.0.8
 	github.com/ontio/ontology-eventbus v0.9.1
-	github.com/ontio/wagon v0.4.2
 	github.com/orcaman/concurrent-map v0.0.0-20190826125027-8c72a8bb44f6 // indirect
 	github.com/pborman/uuid v1.2.0
 	github.com/syndtr/goleveldb v1.0.1-0.20190923125748-758128399b1d
 	github.com/urfave/cli v1.22.4
 	github.com/valyala/bytebufferpool v1.0.0
-	golang.org/x/crypto v0.0.0-20200414173820-0848c9571904
-	golang.org/x/net v0.0.0-20200301022130-244492dfa37a
+	golang.org/x/crypto v0.0.0-20200427165652-729f1e841bcc
+	golang.org/x/net v0.0.0-20200425230154-ff2c4b7c35a0
 )
