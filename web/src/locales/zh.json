@@ -24,7 +24,9 @@
         "decryptWallet": "解密钱包",
         "sendTokens": "发送代币",
         "submit": "提交",
-        "convertTokens": "转换代币"
+        "convertTokens": "转换代币",
+        "transactionSuccess": "交易发送成功",
+        "transactionFail": "交易发送失败"
     },
     "send": {
         "amount": "金额",

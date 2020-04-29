@@ -95,7 +95,7 @@ export default {
 		},
 		async fetchTxRecords() {
 			const url =
-				"http://172.168.3.59:30334/api/v1/getlayer2tx/" + this.address;
+				process.env.VUE_APP_LAYER2_SERVER + "/api/v1/getlayer2tx/" + this.address;
 			const res = await fetch(url, { method: "get" });
 			const result = await res.json();
 			console.log(result);
@@ -122,7 +122,7 @@ export default {
         },
         async fetchWithdrawRecords() {
 			const url =
-				"http://172.168.3.59:30334/api/v1/getlayer2withdraw/" + this.address;
+				process.env.VUE_APP_LAYER2_SERVER + "/api/v1/getlayer2withdraw/" + this.address;
 			const res = await fetch(url, { method: "get" });
 			const result = await res.json();
 			console.log(result);
@@ -149,7 +149,7 @@ export default {
         },
         async fetchDepositRecords() {
 			const url =
-				"http://172.168.3.59:30334/api/v1/getlayer2deposit/" + this.address;
+				process.env.VUE_APP_LAYER2_SERVER + "/api/v1/getlayer2deposit/" + this.address;
 			const res = await fetch(url, { method: "get" });
 			const result = await res.json();
 			console.log(result);

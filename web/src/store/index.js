@@ -1,11 +1,21 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import {
-    Crypto, RpcClient, utils, Parameter, ParameterType, TransactionBuilder,
-    WebsocketClient, OntAssetTxBuilder
-} from 'ontology-ts-sdk'
+// import {
+//     Crypto, RpcClient, utils, Parameter, ParameterType, TransactionBuilder,
+//     WebsocketClient, OntAssetTxBuilder
+// } from 'ontology-ts-sdk'
+
+const Crypto = Ont.Crypto
+const RpcClient = Ont.RpcClient;
+const utils = Ont.utils;
+const Parameter = Ont.Parameter, ParameterType = Ont.ParameterType;
+const TransactionBuilder = Ont.TransactionBuilder;
+const WebsocketClient = Ont.WebsocketClient;
+const OntAssetTxBuilder = Ont.OntAssetTxBuilder;
+
 import BigNumber from 'bignumber.js'
 Vue.use(Vuex)
+
 const onchain_tokens = [
     {
         token: 'ONT',
@@ -38,9 +48,9 @@ export default new Vuex.Store({
     state: {
         onchain_tokens: onchain_tokens,
         offchain_tokens: offchain_tokens,
-        layer2_rpc: 'http://172.168.3.59:40336',
-        layer2_socket: 'ws://172.168.3.59:40335',
-        contract_address: 'd1b62355d7c88a76fefee8f4ce14efb477992a3c',
+        layer2_rpc: process.env.VUE_APP_LAYER2_RPC, //'http://172.168.3.59:40336',
+        layer2_socket: process.env.VUE_APP_LAYER2_SOCKET,  //'ws://172.168.3.59:40335',
+        contract_address: process.env.VUE_APP_CONTRACT_HASH,
         address: address,
         privateKey: privateKey
     },
@@ -112,10 +122,15 @@ export default new Vuex.Store({
             const privateKey = new Crypto.PrivateKey(state.privateKey)
             TransactionBuilder.signTransaction(tx, privateKey);
             const socketClient = new WebsocketClient()
-            const res = await socketClient.sendRawTransaction(tx.serialize(), false, true);
-            console.log(JSON.stringify(res));
-            dispatch('getBalance', state.address)
-            return res;
+            try {
+                const res = await socketClient.sendRawTransaction(tx.serialize(), false, true);
+                console.log(JSON.stringify(res));
+                dispatch('getBalance', state.address)
+                return res;
+            } catch (err) {
+                return err
+            }
+            
         },
         async withdraw({ commit, dispatch, state }, { amount, asset }) {
             debugger
@@ -130,6 +145,7 @@ export default new Vuex.Store({
                 amountV = new BigNumber(amount).times(1e9).toNumber()
             }
             const tx = OntAssetTxBuilder.makeTransferTx(assetV, payer, to, amountV, '0', '200000', payer);
+            tx.isLayer2Node = true
             const privateKey = new Crypto.PrivateKey(state.privateKey)
             TransactionBuilder.signTransaction(tx, privateKey);
             const socketClient = new WebsocketClient(state.layer2_socket)
@@ -153,6 +169,7 @@ export default new Vuex.Store({
             debugger
             if (token === 'XONT' || token === 'XONG') {
                 const tx = OntAssetTxBuilder.makeTransferTx(assetV, payer, receiver, amountV, '0', '200000', payer);
+                tx.isLayer2Node = true;
                 const privateKey = new Crypto.PrivateKey(state.privateKey)
                 TransactionBuilder.signTransaction(tx, privateKey);
                 const socketClient = new WebsocketClient(state.layer2_socket)
