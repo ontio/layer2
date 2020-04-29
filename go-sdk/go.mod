@@ -1,17 +1,14 @@
-module github.com/ontio/layer2/ontology-go-sdk
+module github.com/ontio/layer2/go-sdk
 
-go 1.12
+go 1.14
 
 require (
-	github.com/btcsuite/btcd v0.20.1-beta // indirect
-	github.com/gorilla/websocket v1.4.1
+	github.com/FactomProject/basen v0.0.0-20150613233007-fe3947df716e // indirect
+	github.com/gorilla/websocket v1.4.2
 	github.com/itchyny/base58-go v0.1.0
 	github.com/ontio/go-bip32 v0.0.0-20190520025953-d3cea6894a2b
-	github.com/ontio/ontology v1.8.1
-	github.com/ontio/ontology-crypto v1.0.7
-	github.com/stretchr/testify v1.4.0
+	github.com/ontio/layer2/node v0.0.0-20200429080610-b9a266b5275d
+	github.com/ontio/ontology-crypto v1.0.8
 	github.com/tyler-smith/go-bip39 v1.0.2
-	golang.org/x/crypto v0.0.0-20191219195013-becbf705a915
+	golang.org/x/crypto v0.0.0-20200427165652-729f1e841bcc
 )
-
-replace github.com/go-interpreter/wagon => github.com/ontio/wagon v0.3.1-0.20191012103353-ef8d35ecd300
