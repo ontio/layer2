@@ -62,7 +62,15 @@ Collector周期性的打包收集到的Layer2交易，运行交易，这样就�
 
 3.	等待State确认。
 
-### 工作流程
+### 用户Deposit流程
+
+<div align=center><img width="650" height="450" src="doc/pic/user_deposit.png"/></div>
+
+### 用户Withdraw流程
+
+<div align=center><img width="650" height="450" src="doc/pic/user_withdraw.png"/></div>
+
+### 用户Layer交易以及安全保证流程
 
 <div align=center><img width="650" height="450" src="doc/pic/system.png"/></div>
 
