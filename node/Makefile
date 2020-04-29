@@ -15,7 +15,7 @@ ABI=$(TOOLS)/abi
 NATIVE_ABI_SCRIPT=./cmd/abi/native_abi_script
 
 ontology: $(SRC_FILES)
-	CGO_ENABLED=1 $(GC)  $(BUILD_NODE_PAR) -o node main.go
+	CGO_ENABLED=1 $(GC)  $(BUILD_NODE_PAR) -o Node main.go
  
 sigsvr: $(SRC_FILES) abi 
 	$(GC)  $(BUILD_NODE_PAR) -o sigsvr cmd-tools/sigsvr/sigsvr.go

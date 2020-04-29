@@ -89,7 +89,7 @@ confirmHeight指定了用户在Layer2进行withdraw后，需要多少个状态�
 ```
 echo '1' | ./Node --config config.json --rpcport 40336 --nodeport 40338 --ws --wsport 40335 --rest --restport 40334 --loglevel 1 > log &
 ```
-以上命令会在后台启动Node服务，输入钱包文件wallet_ontology的密码'1'来启动Node。
+以上命令会在后台启动Node服务，输入钱包文件wallet.dat的密码'1'来启动Node。
 
 ## 安装安全守护程序Operator
 

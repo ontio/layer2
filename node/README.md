@@ -16,14 +16,6 @@ Layer2 Node是ontology的Layer2交易收集器，它负责收集用户的Layer2�
 * 正确的Go语言开发环境
 * Linux操作系统
 
-### 获取Layer2 Node
-
-克隆Layer2仓库到 **$GOPATH/src/github.com/ontio** 目录
-
-```
-$ git clone https://github.com/Layer2/node.git
-```
-
 ### 编译
 用make编译源码
 
@@ -31,17 +23,18 @@ $ git clone https://github.com/Layer2/node.git
 $ make all
 ```
 
-成功编译后会生成两个可以执行程序
+成功编译后会生成Node执行程序
 
-* `node`: 节点程序/以命令行方式提供的节点控制程序
+* `Node`: 节点程序/以命令行方式提供的节点控制程序
 
-### 运行Layer Node
+### 运行Layer2 Node
 
-直接启动Ontology
-
-   ```
-	./node
-   ```
+启动Node需要有Layer2的钱包文件，这是Node需要的交易验证人账户。
+使用以下命令来启动Node：
+```
+echo '1' | ./Node --config config.json --rpcport 40336 --nodeport 40338 --ws --wsport 40335 --rest --restport 40334 --loglevel 1 > log &
+```
+以上命令会在后台启动Node服务，输入钱包文件wallet.dat的密码'1'来启动Node。
 
 ## 许可证
 
