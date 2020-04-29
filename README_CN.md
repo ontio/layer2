@@ -64,7 +64,7 @@ Collector周期性的打包收集到的Layer2交易，运行交易，这样就�
 
 ### 工作流程
 
-![](doc/pic/system.png)
+<div align=center><img width="650" height="450" src="doc/pic/system.png"/></div>
 
 ###	合约部署
 
@@ -103,7 +103,7 @@ Collector和Challenger联合是可以作恶的。
 
 账户使用Merkel树的方式来组织，但这是一个可以跟踪更新的Merkel树。Merkel树包含了更新之前的Root Hash和更新的账户.
 
-![](doc/pic/account.png)
+<div align=center><img width="450" height="660" src="doc/pic/account.png"/></div>
 
 每个State Root都固定对应一个高度，从0开始从下往上一次递增。我们需要在链上记录每个高度上的State Root。
 
