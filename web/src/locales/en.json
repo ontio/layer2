@@ -24,7 +24,9 @@
         "decryptWallet": "Decrypt wallet",
         "sendTokens": "Send",
         "submit": "Submit",
-        "convertTokens": "Convert tokens"
+        "convertTokens": "Convert tokens",
+        "transactionSuccess": "Transaction sent succeed",
+        "transactionFail": "Transaction sent failed"
     },
     "send": {
         "amount": "Amount",

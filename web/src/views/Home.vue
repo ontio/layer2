@@ -229,7 +229,7 @@
 <script>
 import VueQrcode from "vue-qrcode";
 import { mapState } from "vuex";
-import {Crypto, RpcClient} from 'ontology-ts-sdk'
+// import {Crypto, RpcClient} from 'ontology-ts-sdk'
 export default {
 	name: "Home",
 	components: {
@@ -313,9 +313,9 @@ export default {
                 this.$message.error('错误的钱包文件。')
                 return;
             }
-            const pri = new Crypto.PrivateKey(account.key);
+            const pri = new Ont.Crypto.PrivateKey(account.key);
             const salt = Buffer.from(account.salt, 'base64').toString('hex');
-            const address = new Crypto.Address(account.address);
+            const address = new Ont.Crypto.Address(account.address);
             this.$store.commit('UPDATE_ADDRESS', address.toBase58())
             try {
                 const decrypted = pri.decrypt(this.password, address, salt, {
@@ -384,10 +384,12 @@ export default {
 		onSendSubmit() {
             this.requesting = true
             this.$store.dispatch('sendToken', {...this.sendForm}).then(res => {
+                this.sendVisible = false
+                this.requesting = false
                 if(res.Error === 0) {
-                    this.$message.success('交易发送成功')
-                    this.sendVisible = false
-                    this.requesting = false
+                    this.$message.success(this.$t('home.transactionSuccess'))    
+                } else {
+                    this.$message.fail(res.message || this.$t('home.transactionFail'))    
                 }
             })
         },
@@ -396,19 +398,23 @@ export default {
             if(from === 'ONT' || from === 'ONG') {
                 this.requesting = true
                 this.$store.dispatch('deposit', {amount, asset: from}).then(res => {
+                this.convertVisible = false;
+                this.requesting = false
                 if(res.Error === 0) {
-                    this.$message.success('交易发送成功')
-                    this.convertVisible = false;
-                    this.requesting = false
+                    this.$message.success(this.$t('home.transactionSuccess'))    
+                } else {
+                    this.$message.fail(res.message || this.$t('home.transactionFail'))    
                 }
             })
             } else if(from === 'XONT' || from === 'XONG') {
                 this.requesting = true
                 this.$store.dispatch('withdraw', {amount, asset:from}).then(res => {
+                this.convertVisible = false;
+                this.requesting = false
                 if(res.Error === 0) {
-                    this.$message.success('交易发送成功')
-                    this.convertVisible = false;
-                    this.requesting = false
+                    this.$message.success(this.$t('home.transactionSuccess'))    
+                } else {
+                    this.$message.fail(res.message || this.$t('home.transactionFail'))    
                 }
             })
             }
