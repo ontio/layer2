@@ -123,9 +123,9 @@ github.com/onsi/ginkgo v1.7.0/go.mod h1:lLunBs/Ym6LB5Z9jYTR76FiuTmxDTDusOGeTQH+W
 github.com/onsi/gomega v1.4.3/go.mod h1:ex+gbHU/CVuBBDIJjb2X0qEXbFg53c61hWP/1CpauHY=
 github.com/ontio/go-bip32 v0.0.0-20190520025953-d3cea6894a2b h1:UQDN12BzdWhXQL0t2QcRixHqAIG+JKNvQ20DhrIODtU=
 github.com/ontio/go-bip32 v0.0.0-20190520025953-d3cea6894a2b/go.mod h1:J0eVc7BEMmVVXbGv9PHoxjRSEwOwLr0qfzPk8Rdl5iw=
-github.com/ontio/layer2 v0.0.0-20200429080610-b9a266b5275d h1:RWxQjf4KpVrQbQWssNavKPjDv8ysD9cfxd7Ze0e6Ks0=
-github.com/ontio/layer2/node v0.0.0-20200429080610-b9a266b5275d h1:bGw3Z4+PHOf9z/9W3ukihBmU3Tt1TvCoZhI3xxAIoEU=
-github.com/ontio/layer2/node v0.0.0-20200429080610-b9a266b5275d/go.mod h1:2AtGxryx2wy19cZZfu/cclOfoRUafBG8e3X4mQUvWwo=
+github.com/ontio/layer2 v0.0.0-20200429091234-c4911b865a2c h1:8URQm+5Tou+wh2j0kLPpsm2vPdr6EZMKC+v90CzrksQ=
+github.com/ontio/layer2/node v0.0.0-20200429091234-c4911b865a2c h1:9W5is1ilrZpVueTzvzQNg88Q5Hj3rmOrQqFx3svx814=
+github.com/ontio/layer2/node v0.0.0-20200429091234-c4911b865a2c/go.mod h1:2AtGxryx2wy19cZZfu/cclOfoRUafBG8e3X4mQUvWwo=
 github.com/ontio/ontology-crypto v1.0.8 h1:xft6K8I43vkl60kywT/9GZlUjdacaL7OF6MFFb32kE4=
 github.com/ontio/ontology-crypto v1.0.8/go.mod h1:RW/HSgBTd6Qcuhr/C4luOftN+LNl5oZTQzAywHTsmtY=
 github.com/ontio/ontology-eventbus v0.9.1 h1:nt3AXWx3gOyqtLiU4EwI92Yc4ik/pWHu9xRK15uHSOs=
