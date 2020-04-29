@@ -20,7 +20,7 @@ package oep4
 import (
 	"fmt"
 	"github.com/ontio/ontology-crypto/keypair"
-	ontology_go_sdk "github.com/ontio/layer2/layer2-go-sdk"
+	ontology_go_sdk "github.com/ontio/layer2/go-sdk"
 	"github.com/ontio/layer2/go-sdk/utils"
 	"github.com/ontio/layer2/node/common"
 	"github.com/ontio/layer2/node/core/types"

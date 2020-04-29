@@ -19,7 +19,7 @@ package main
 
 import (
 	"fmt"
-	sdk "github.com/ontio/layer2/layer2-go-sdk"
+	sdk "github.com/ontio/layer2/go-sdk"
 
 	"encoding/binary"
 	"github.com/ontio/layer2/go-sdk/utils"

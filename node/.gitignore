@@ -24,7 +24,6 @@ Chain
 /config/*
 nodectl
 ontology
-wallet.dat
 cscope*
 *.exe
 **/*.log
@@ -33,12 +32,9 @@ neosnapshot/*
 glide.lock
 *.iml
 docker/payload
-config.json
 peers.recent
 clean.sh
 start.sh
 stop.sh
 pid
-log
-core/*
 
