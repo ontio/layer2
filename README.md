@@ -50,7 +50,7 @@ Operator是Layer2的安全守护程序，负责监听ontology主链是否有到L
 
 5.	主链合约执行deposit释放操作，修改deposit资金状态为“已释放”。
 
-<div align=center><img width="650" height="450" src="doc/pic/user_deposit.jpg"/></div>
+<div align=center><img width="360" height="450" src="doc/pic/user_deposit.png"/></div>
 
 ### Withdraw到ontology
 
@@ -66,7 +66,7 @@ Operator是Layer2的安全守护程序，负责监听ontology主链是否有到L
 
 6.	主链合约执行withdraw释放请求，给目标账户转账，同时设置withdraw记录为“已释放“
 
-<div align=center><img width="650" height="450" src="doc/pic/user_withdraw.jpg"/></div>
+<div align=center><img width="499" height="450" src="doc/pic/user_withdraw.png"/></div>
 
 ###	用户Layer交易
 
