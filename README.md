@@ -1,6 +1,8 @@
-# Ontology Layer2 Node
+# Ontology Layer2
 
-[English](design_CN.md)|中文
+English|[中文](design_CN.md)
+
+## 名称解释
 
 ### Layer2交易
 
@@ -68,9 +70,9 @@ Operator是Layer2的安全守护程序，负责监听Ontology主链是否有到L
 
 ###	用户Layer交易
 
-1.	用户构造Transfer的Layer2交易并提交给Collector。
+1.	用户构造Transfer的Layer2交易并提交给Node。
 
-2.	Collector打包该transfer交易以及其他交易到一个Layer2区块，执行区块中的交易，提交这个Layer2区块State到Ontology主链。
+2.	Node打包该transfer交易以及其他交易到一个Layer2区块，执行区块中的交易，提交这个Layer2区块State到Ontology主链。
 
 3.	等待State确认。
 
@@ -80,17 +82,17 @@ Operator是Layer2的安全守护程序，负责监听Ontology主链是否有到L
 
 ###	合约部署
 
-1.	用户提交合约以及合约部署的Layer2交易到Collector。
+1.	用户提交合约以及合约部署的Layer2交易到Node。
 
-2.	Collector部署合约并打包该交易到Layer2区块
+2.	Node部署合约并打包该交易到Layer2区块
 
 3.	Layer2区块同步到Challenger后，Challenger部署合约。
 
 ###	合约交易
 
-1.	用户构造合约的Layer2交易并提交给Collector。
+1.	用户构造合约的Layer2交易并提交给Node。
 
-2.	Collector执行合约交易，生成新的state，打包该交易以及其他交易到一个Layer2区块，提交这个Layer2区块State到Ontology主链。
+2.	Node执行合约交易，生成新的state，打包该交易以及其他交易到一个Layer2区块，提交这个Layer2区块State到Ontology主链。
 
 3.	等待State确认
 
@@ -98,17 +100,17 @@ Operator是Layer2的安全守护程序，负责监听Ontology主链是否有到L
 
 ### 区块State验证
 
-Collector提交Layer2区块State到主链时，这个State是没有验证的，这个State其实是不安全的，我们通过Challenger角色来解决这个问题，Collector将Layer2区块同步给Challenger，Challenger执行Layer2区块中的交易，验证Layer2区块State。
+Node提交Layer2区块State到主链时，这个State是没有验证的，这个State其实是不安全的，我们通过Challenger角色来解决这个问题，Collector将Layer2区块同步给Challenger，Challenger执行Layer2区块中的交易，验证Layer2区块State。
 
-这要求Collector必须将Layer2区块同步给Challenger。
-Collector和Challenger联合是可以作恶的。
+这要求Node必须将Layer2区块同步给Challenger。
+Node和Challenger联合是可以作恶的。
 需要一个State的确认周期。
 
-为防止Collector作恶，我们需要欺诈证明，欺诈证明包括上一个状态的SMT，Layer2区块，在合约中验证欺诈证明时，需要合约验证Layer2区块中交易，区块，执行Layer2交易（此处不包括合约交易，因为合约交易还依赖其上一个状态，合约交易问题在后面详述）来计算新的state。(如何验证区块，我们还需要在Ontology主链上提交Laery区块的Hash)
+为防止Node作恶，我们需要欺诈证明，欺诈证明包括上一个状态的SMT，Layer2区块，在合约中验证欺诈证明时，需要合约验证Layer2区块中交易，区块，执行Layer2交易（此处不包括合约交易，因为合约交易还依赖其上一个状态，合约交易问题在后面详述）来计算新的state。(如何验证区块，我们还需要在Ontology主链上提交Laery区块的Hash)
 
-以上欺诈证明有一个前提是要求collector同步Layer2区块给Challenger。
+以上欺诈证明有一个前提是要求Node同步Layer2区块给Challenger。
 
-对于Challenger，有欺诈证明Collector作恶，Challenger需要向Ontology主链提交欺诈证明和保证金来挑战，提交保证金的目的是防止恶意挑战。对于成功证明Collector作恶的Challenger，Challenger可以获取奖励，作恶的Collector将收到惩罚。（这要求collector在主链有抵押资产）
+对于Challenger，有欺诈证明Node作恶，Challenger需要向Ontology主链提交欺诈证明和保证金来挑战，提交保证金的目的是防止恶意挑战。对于成功证明Node作恶的Challenger，Challenger可以获取奖励，作恶的Node将收到惩罚。（这要求Node在主链有抵押资产）
 
 
 ## 账户模型

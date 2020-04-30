@@ -207,7 +207,7 @@ func (this *Layer2Operator) MonitorOntologyChain() {
 				fmt.Println(err)
 				continue
 			}
-			log.Infof("chain %s current height: %d", this.ontologyChainInfo.Name, currentHeight)
+			log.Infof("chain %s current height: %d, parser height: %d", this.ontologyChainInfo.Name, currentHeight, this.ontologyChainInfo.Height)
 			if currentHeight <= this.ontologyChainInfo.Height {
 				continue
 			}
@@ -326,9 +326,13 @@ func (this *Layer2Operator) depositLoop() {
 	for {
 		select {
 		case deposit := <-this.depositChain:
-			err := this.commitDeposit2Layer2(deposit)
-			if err != nil {
-				log.Errorf("commit deposit 2 alyer2 error: %s", err.Error())
+			for true {
+				err := this.commitDeposit2Layer2(deposit)
+				if err != nil {
+					log.Errorf("commit deposit 2 alyer2 error: %s", err.Error())
+				} else {
+					break
+				}
 			}
 		}
 	}
@@ -356,9 +360,16 @@ func (this *Layer2Operator) commitDeposit2Layer2(deposit *Deposit) error {
 	if err != nil {
 		return err
 	}
-	hash, err := this.layer2Sdk.SendTransaction(tx)
-	if err != nil {
-		return err
+	var hash layer2_common.Uint256
+	for true {
+		hash, err = this.layer2Sdk.SendTransaction(tx)
+		if err != nil {
+			log.Errorf("send transaction err when commit deposit 2 layer2, err: %s, try again......", err.Error())
+			time.Sleep(time.Second * 1)
+			// send error, we cannot send again, so ignore this error
+		} else {
+			break
+		}
 	}
 	deposit.State = DEPOSIT_COMMIT
 	UpdateDeposit(deposit.TxHash, deposit.State, hash.ToHexString())
@@ -368,6 +379,7 @@ func (this *Layer2Operator) commitDeposit2Layer2(deposit *Deposit) error {
 
 func (this *Layer2Operator) MonitorLayer2Chain() {
 	updateTicker := time.NewTicker(time.Second * 1)
+	counter := 0
 	for {
 		select {
 		case <- updateTicker.C:
@@ -377,17 +389,22 @@ func (this *Layer2Operator) MonitorLayer2Chain() {
 				continue
 			}
 
-			log.Infof("chain %s current height: %d", this.layer2ChainInfo.Name, currentHeight)
-			if currentHeight <= this.layer2ChainInfo.Height {
+			log.Infof("chain %s current height: %d, parser height: %d", this.layer2ChainInfo.Name, currentHeight, this.layer2ChainInfo.Height)
+			if this.layer2ChainInfo.Height >= currentHeight {
 				continue
 			}
-			for currentHeight > this.layer2ChainInfo.Height + 1 {
+			for this.layer2ChainInfo.Height < currentHeight-1 {
+				if counter > 600 {
+					this.layer2ChainInfo.Height --
+				}
 				commitHeight := GetLastestLayer2Commit()
 				if commitHeight < this.layer2ChainInfo.Height {
+					counter ++
 					break
 				}
 
 				this.layer2ChainInfo.Height ++
+				counter = 0
 				err = this.parseLayer2ChainBlock(this.layer2ChainInfo)
 				if err != nil {
 					fmt.Println(err)
@@ -495,9 +512,13 @@ func (this *Layer2Operator) commitMsgLoop() {
 	for {
 		select {
 		case msg := <-this.msgChan:
-			err := this.commitLayer2State2Ontology(msg)
-			if err != nil {
-				log.Errorf("commit layer2 state to ontology err: %s", err.Error())
+			for true {
+				err := this.commitLayer2State2Ontology(msg)
+				if err != nil {
+					log.Errorf("commit layer2 state to ontology err: %s", err.Error())
+				} else {
+					break
+				}
 			}
 		}
 	}
@@ -533,9 +554,15 @@ func (this *Layer2Operator) commitLayer2State2Ontology(msg *Layer2CommitMsg) err
 	if err != nil {
 		return fmt.Errorf("sign layer2 state commit transaction failed! err: %s", err.Error())
 	}
-	txHash, err := this.ontologySdk.SendTransaction(tx)
-	if err != nil {
-		return fmt.Errorf("send layer2 state commit transaction failed! err: %s", err.Error())
+
+	var txHash ontology_common.Uint256
+	for true {
+		txHash, err = this.ontologySdk.SendTransaction(tx)
+		if err != nil {
+			log.Errorf("send layer2 state commit transaction failed! err: %s, try again......", err.Error())
+		} else {
+			break
+		}
 	}
 	log.Infof("layer2 state commit transaction hash: %s", txHash.ToHexString())
 
@@ -565,12 +592,12 @@ func (this *Layer2Operator) checkLayer2State() {
 	for _, txHash := range txHashs {
 		event, err := this.ontologySdk.GetSmartContractEvent(txHash)
 		if err != nil {
-			log.Errorf("get smart contract event failed! err: %s", err.Error())
+			log.Errorf("get smart contract event failed! hash: %s, err: %s", txHash, err.Error())
 			continue
 		}
 		heigth, err := this.ontologySdk.GetBlockHeightByTxHash(txHash)
 		if err != nil {
-			log.Errorf("get smart contract event failed! err: %s", err.Error())
+			log.Errorf("get tx height failed! hash: %s, err: %s", txHash, err.Error())
 			continue
 		}
 		if event == nil {

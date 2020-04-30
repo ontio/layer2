@@ -218,7 +218,7 @@ func SaveLayer2Tx(layer2Tx *Layer2Tx) error {
 }
 
 func LoadLayer2Tx(address string) []*Layer2Tx {
-	strsql := "select txhash, state, tt, fee, height, fromaddress, tokenaddress, toaddress, amount from layer2tx where fromaddress = ? or toaddress = ?"
+	strsql := "select txhash, state, tt, fee, height, fromaddress, tokenaddress, toaddress, amount from layer2tx where fromaddress = ? or toaddress = ? order by height"
 	stmt, err := DefDB.Prepare(strsql)
 	if stmt != nil {
 		defer stmt.Close()
