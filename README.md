@@ -1,12 +1,10 @@
-# Ontology Layer2
+# Ontology Layer2 Node
 
-English|[中文](design_CN.md)
-
-## 名称解释
+[English](design_CN.md)|中文
 
 ### Layer2交易
 
-用户在Layer2进行转账或者执行合约的请求，用户已经对其签名。这个交易可以和ontology主链的交易格式一样，也可以不一样。
+用户在Layer2进行转账或者执行合约的请求，用户已经对其签名。这个交易可以和Ontology主链的交易格式一样，也可以不一样。
 
 ### Node
 
@@ -18,19 +16,19 @@ Node周期性的打包收集到的Layer2交易，生成一个包含这期间所�
 
 ### Layer2 State
 
-Node执行Layer2区块中打包的交易，更新状态，将所有更新的状态数据排序生成一个Merkel树，计算Merkel树的根hash，该根hash即为该区块的Layer2 State。
+Node执行Layer2区块中打包的交易，更新状态，将所有更新的状态数据排序生成一个Merkle树，计算Merkle树的根hash，该根hash即为该区块的Layer2 State。
 
 ### Operator
 
-Operator是Layer2的安全守护程序，负责监听ontology主链是否有到Layer2的代币转移或者Layer2都ontology主链的代币转移交易，同时Operator还负责周期性的将Layer2的状态证明提交到ontology主网作为证明。
+Operator是Layer2的安全守护程序，负责监听Ontology主链是否有到Layer2的代币转移或者Layer2都Ontology主链的代币转移交易，同时Operator还负责周期性的将Layer2的状态证明提交到Ontology主网作为证明。
 
 ### Challenger
 
-负责验证Operator提交到ontology主链的状态证明。这要求Challenger从Operator或者链上同步Layer2交易，维护完整的全局状态。在Challenger同步执行交易并更新状态后，可以验证Operator提交在Ontology主网的状态证明正确性，如果不正确，Challenger可以生成Layer2合约可以解释的欺诈证明挑战Operator。
+负责验证Operator提交到Ontology主链的状态证明。这要求Challenger从Operator或者链上同步Layer2交易，维护完整的全局状态。在Challenger同步执行交易并更新状态后，可以验证Operator提交在Ontology主网的状态证明正确性，如果不正确，Challenger可以生成Layer2合约可以解释的欺诈证明挑战Operator。
 
 ### 账户状态证明
 
-包括账户状态信息以及其merkel证明，可以从Operator和Challenger查询来获取。只有他们维护有完整的全局状态。
+包括账户状态信息以及其Merkle证明，可以从Operator和Challenger查询来获取。只有他们维护有完整的全局状态。
 
 ### 欺诈证明
 
@@ -40,25 +38,25 @@ Operator是Layer2的安全守护程序，负责监听ontology主链是否有到L
 
 ###	Deposit到Layer2
 
-1.	用户在ontology主链进行deposit操作，主链合约锁定用户Deposit的资金，记录这笔资金在Layer2的状态，此时状态为“未释放”。
+1.	用户在Ontology主链进行deposit操作，主链合约锁定用户Deposit的资金，记录这笔资金在Layer2的状态，此时状态为“未释放”。
 
-2.	Operator查询到主链ontology上有deposit操作，Operator会提交deposit到Layer2 Node。
+2.	Operator查询到主链Ontology上有deposit操作，Operator会提交deposit到Layer2 Node。
 
-3.  Node将该交易和收集的其他用户交易一起打包到一个新的Layer2区块，执行Layer2区块，生成新的Layer2 State。
+3.	Node将该交易和收集的其他用户交易一起打包到一个新的Layer2区块，执行Layer2区块，生成新的Layer2 State。
 
-4.  Operator会监听Layer2 Node新的区块，提交新的Layer2 State到ontology主链时，会附带提交deposit已经释放的请求。
+4.	Operator会监听Layer2 Node新的区块，提交新的Layer2 State到Ontology主链时，会附带提交deposit已经释放的请求。
 
 5.	主链合约执行deposit释放操作，修改deposit资金状态为“已释放”。
 
 <div align=center><img width="360" height="450" src="doc/pic/user_deposit.png"/></div>
 
-### Withdraw到ontology
+### Withdraw到Ontology
 
 1.	用户构造Withdraw的Layer2交易并提交给Node。
 
 2.	Node根据Withdraw修改其State，同时打包该Withdraw交易以及其他用户交易一起到一个Layer2区块。
 
-3.  Operator提交这个Layer2区块State到Ontology主链时，会附带提交withdraw请求。
+3.	Operator提交这个Layer2区块State到Ontology主链时，会附带提交withdraw请求。
 
 4.	主链合约执行Withdraw请求，记录一笔withdraw资金记录，并设置状态为“未释放”。
 
@@ -72,7 +70,7 @@ Operator是Layer2的安全守护程序，负责监听ontology主链是否有到L
 
 1.	用户构造Transfer的Layer2交易并提交给Collector。
 
-2.	Collector打包该transfer交易以及其他交易到一个Layer2区块，执行区块中的交易，提交这个Layer2区块State到ontology主链。
+2.	Collector打包该transfer交易以及其他交易到一个Layer2区块，执行区块中的交易，提交这个Layer2区块State到Ontology主链。
 
 3.	等待State确认。
 
@@ -92,7 +90,7 @@ Operator是Layer2的安全守护程序，负责监听ontology主链是否有到L
 
 1.	用户构造合约的Layer2交易并提交给Collector。
 
-2.	Collector执行合约交易，生成新的state，打包该交易以及其他交易到一个Layer2区块，提交这个Layer2区块State到ontology主链。
+2.	Collector执行合约交易，生成新的state，打包该交易以及其他交易到一个Layer2区块，提交这个Layer2区块State到Ontology主链。
 
 3.	等待State确认
 
@@ -106,16 +104,16 @@ Collector提交Layer2区块State到主链时，这个State是没有验证的，�
 Collector和Challenger联合是可以作恶的。
 需要一个State的确认周期。
 
-为防止Collector作恶，我们需要欺诈证明，欺诈证明包括上一个状态的SMT，Layer2区块，在合约中验证欺诈证明时，需要合约验证Layer2区块中交易，区块，执行Layer2交易（此处不包括合约交易，因为合约交易还依赖其上一个状态，合约交易问题在后面详述）来计算新的state。(如何验证区块，我们还需要在ontology主链上提交Laery区块的Hash)
+为防止Collector作恶，我们需要欺诈证明，欺诈证明包括上一个状态的SMT，Layer2区块，在合约中验证欺诈证明时，需要合约验证Layer2区块中交易，区块，执行Layer2交易（此处不包括合约交易，因为合约交易还依赖其上一个状态，合约交易问题在后面详述）来计算新的state。(如何验证区块，我们还需要在Ontology主链上提交Laery区块的Hash)
 
 以上欺诈证明有一个前提是要求collector同步Layer2区块给Challenger。
 
-对于Challenger，有欺诈证明Collector作恶，Challenger需要向ontology主链提交欺诈证明和保证金来挑战，提交保证金的目的是防止恶意挑战。对于成功证明Collector作恶的Challenger，Challenger可以获取奖励，作恶的Collector将收到惩罚。（这要求collector在主链有抵押资产）
+对于Challenger，有欺诈证明Collector作恶，Challenger需要向Ontology主链提交欺诈证明和保证金来挑战，提交保证金的目的是防止恶意挑战。对于成功证明Collector作恶的Challenger，Challenger可以获取奖励，作恶的Collector将收到惩罚。（这要求collector在主链有抵押资产）
 
 
 ## 账户模型
 
-账户使用Merkel树的方式来组织，但这是一个可以跟踪更新的Merkel树。Merkel树包含了更新之前的Root Hash和更新的账户.
+账户使用Merkle树的方式来组织，但这是一个可以跟踪更新的Merkle树。Merkle树包含了更新之前的Root Hash和更新的账户.
 
 <div align=center><img width="450" height="660" src="doc/pic/account.png"/></div>
 
@@ -123,11 +121,11 @@ Collector和Challenger联合是可以作恶的。
 
 如何证明一个账户的状态？
 
-如果账户在高度为H时账户状态有更新，那么在高度为H的state树中包含有其账户状态，这是一个merkel树，从全局看又是一个子树。但我们在链上有这个子树的root hash，这样可以在这个子树上生成merkel proof，结合这个子树的root hash可以证明这个账户的状态。
+如果账户在高度为H时账户状态有更新，那么在高度为H的state树中包含有其账户状态，这是一个Merkle树，从全局看又是一个子树。但我们在链上有这个子树的root hash，这样可以在这个子树上生成Merkle proof，结合这个子树的root hash可以证明这个账户的状态。
 
-但这个账户可能不是最新的，因为后续的更新产生的新的merkel树中包含了更新的账户状态。所以有挑战机制，挑战者只需要提交这个账户的merkel proof，其root hash所在的高度更高，那么其挑战成功。
+但这个账户可能不是最新的，因为后续的更新产生的新的Merkle树中包含了更新的账户状态。所以有挑战机制，挑战者只需要提交这个账户的Merkle proof，其root hash所在的高度更高，那么其挑战成功。
 
-为什么要这种merkel树？
+为什么要这种Merkle树？
 
 在链上只有每个高度的state root，有时候需要链上验证state变更的有效性。状态转换可以写成如下形式：
 
@@ -143,11 +141,12 @@ S = F（S‘，Txs）
 
 Txs往往不会影响到全局所有状态，只是其中很小部分，只有很小部分状态有更新，以上账户模型只跟踪状态的更新，这里有一个新的实现方式。
 
-不提交全局状态的S‘，仅仅提交S’中会被Txs更新的局部状态以及其merkel proof，在上面已经介绍过如何证明这个状态。在局部状态下执行Txs，生成更新的局部状态，再加上S‘的state root可以计算新的S的state root，从而验证状态转换的有效性。
+不提交全局状态的S‘，仅仅提交S’中会被Txs更新的局部状态以及其Merkle proof，在上面已经介绍过如何证明这个状态。在局部状态下执行Txs，生成更新的局部状态，再加上S‘的state root可以计算新的S的state root，从而验证状态转换的有效性。
 
 有哪些好处：
-1.	无论状态有多少，但只要每次更新的状态不大，那么其子树很小，其merkel proof也比较小
 
-2.	验证状态转换代价小，效率高，只需要提交较少的有更新需求的状态以及其很小的merkel proof，就可以验证状态转换的有效性。
+1.	无论状态有多少，但只要每次更新的状态不大，那么其子树很小，其Merkle proof也比较小
+
+2.	验证状态转换代价小，效率高，只需要提交较少的有更新需求的状态以及其很小的Merkle proof，就可以验证状态转换的有效性。
 
 3.	可以证明一个状态更新过程
