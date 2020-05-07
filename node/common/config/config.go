@@ -58,13 +58,14 @@ const (
 	DEFAULT_MAX_CONN_OUT_BOUND              = uint(1024)
 	DEFAULT_MAX_CONN_IN_BOUND_FOR_SINGLE_IP = uint(16)
 	DEFAULT_HTTP_INFO_PORT                  = uint(0)
-	DEFAULT_MAX_TX_IN_BLOCK                 = 60000
+	DEFAULT_MAX_TX_IN_BLOCK                 = 6000
 	DEFAULT_MAX_SYNC_HEADER                 = 500
 	DEFAULT_ENABLE_CONSENSUS                = true
 	DEFAULT_ENABLE_EVENT_LOG                = true
 	DEFAULT_CLI_RPC_PORT                    = uint(20000)
 	DEFUALT_CLI_RPC_ADDRESS                 = "127.0.0.1"
 	DEFAULT_GAS_LIMIT                       = 20000
+	DEFAULT_MIN_ONG_LIMIT                  = 100000000
 	DEFAULT_GAS_PRICE                       = 500
 	DEFAULT_WASM_GAS_FACTOR                 = uint64(10)
 	DEFAULT_WASM_MAX_STEPCOUNT              = uint64(8000000)
@@ -158,6 +159,7 @@ type CommonConfig struct {
 	SystemFee        map[string]int64
 	GasLimit         uint64
 	GasPrice         uint64
+	MinOngLimit      uint64
 	DataDir          string
 	WasmVerifyMethod VerifyMethod
 }
@@ -205,6 +207,7 @@ func NewOntologyConfig() *OntologyConfig {
 			EnableEventLog:   DEFAULT_ENABLE_EVENT_LOG,
 			SystemFee:        make(map[string]int64),
 			GasLimit:         DEFAULT_GAS_LIMIT,
+			MinOngLimit:      DEFAULT_MIN_ONG_LIMIT,
 			DataDir:          DEFAULT_DATA_DIR,
 			WasmVerifyMethod: InterpVerifyMethod,
 		},

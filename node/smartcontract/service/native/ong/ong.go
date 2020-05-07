@@ -73,7 +73,7 @@ func OngTransfer(native *native.NativeService) ([]byte, error) {
 	}
 	contract := native.ContextRef.CurrentContext().ContractAddress
 	for _, v := range transfers.States {
-		if v.Value == 0 {
+		if v.Value < native.MinOngLimit {
 			continue
 		}
 		if v.Value > constants.ONG_TOTAL_SUPPLY {
@@ -110,7 +110,7 @@ func OngTransferFrom(native *native.NativeService) ([]byte, error) {
 	if err := state.Deserialization(source); err != nil {
 		return utils.BYTE_FALSE, errors.NewDetailErr(err, errors.ErrNoCode, "[OntTransferFrom] State deserialize error!")
 	}
-	if state.Value == 0 {
+	if state.Value < native.MinOngLimit {
 		return utils.BYTE_FALSE, nil
 	}
 	if state.Value > constants.ONG_TOTAL_SUPPLY {

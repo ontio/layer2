@@ -56,6 +56,7 @@ type NativeService struct {
 	Tx            *types.Transaction
 	Height        uint32
 	Time          uint32
+	MinOngLimit   uint64
 	BlockHash     common.Uint256
 	ContextRef    context.ContextRef
 	PreExec       bool
@@ -78,6 +79,7 @@ func (this *NativeService) Invoke() ([]byte, error) {
 	if player == operatorAddress.ToBase58() {
 		this.Operator = true
 	}
+	this.MinOngLimit = config.DefConfig.Common.MinOngLimit
 	if !ok {
 		return BYTE_FALSE, fmt.Errorf("Native contract address %x haven't been registered.", contract.Address)
 	}

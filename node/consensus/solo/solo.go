@@ -203,7 +203,7 @@ func (self *SoloService) makeBlock() (*types.Block, error) {
 
 	txs := self.poolActor.GetTxnPool(true, validHeight)
 	// todo
-	if len(txs) == 0 && self.counter < 100 && self.genEmptyBlock == 0 {
+	if len(txs) == 0 && self.counter < 1000 && self.genEmptyBlock == 0 {
 		self.counter ++
 		log.Infof("The count of tx is too small or timer is not out")
 		return nil, nil

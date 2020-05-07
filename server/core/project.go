@@ -139,7 +139,7 @@ func UpdateDepositByLayer2TxHash(layer2TxHash string, state int) error {
 	return dberr
 }
 
-func UpdateDepositById(id uint32, state int) error {
+func UpdateDepositById(id uint64, state int) error {
 	strSql := "update deposit set state = ? where id = ?"
 	stmt, dberr := DefDB.Prepare(strSql)
 	if stmt != nil {
@@ -169,10 +169,10 @@ func LoadDepositByLayer2TxHash(layer2TxHash string) *Deposit {
 		return nil
 	}
 
-	var height,id,tt uint32
+	var height,tt uint32
 	var state int
 	var txhash, fromaddress,tokenaddress string
-	var amount uint64
+	var amount,id uint64
 	var deposit *Deposit
 	for rows.Next() {
 		if err = rows.Scan(&txhash, &tt, &state, &height, &fromaddress, &amount, &tokenaddress, &id, &layer2TxHash); err != nil {
@@ -277,8 +277,8 @@ func LoadLayer2Tx(address string) []*Layer2Tx {
 	return layer2Txs
 }
 
-func SaveLayer2Commit(txHash string, layer2Msg string) error {
-	strSql := "insert into layer2commit(txhash, layer2msg) values (?,?)"
+func SaveLayer2Commit(txHash string, layer2Msg string, layer2Height uint64) error {
+	strSql := "insert into layer2commit(txhash, layer2msg, layer2height) values (?,?,?)"
 	stmt, dberr := DefDB.Prepare(strSql)
 	if stmt != nil {
 		defer stmt.Close()
@@ -286,12 +286,12 @@ func SaveLayer2Commit(txHash string, layer2Msg string) error {
 	if dberr != nil {
 		return dberr
 	}
-	_, dberr = stmt.Exec(txHash, layer2Msg)
+	_, dberr = stmt.Exec(txHash, layer2Msg, layer2Height)
 	return dberr
 }
 
-func UpdateLayer2Commit(txHash string, height uint32, state int) error {
-	strSql := "update layer2commit set state = ?, height = ? where txhash = ?"
+func UpdateLayer2Commit(txHash string, height uint64, state int) error {
+	strSql := "update layer2commit set state = ?, ontologyheight = ? where txhash = ?"
 	stmt, dberr := DefDB.Prepare(strSql)
 	if stmt != nil {
 		defer stmt.Close()
@@ -303,7 +303,35 @@ func UpdateLayer2Commit(txHash string, height uint32, state int) error {
 	return dberr
 }
 
-func LoadLayer2Commit() []string {
+func GetLayer2CommitHeight() uint32 {
+	strsql := "select max(layer2height) from layer2commit where state = ?"
+	stmt, err := DefDB.Prepare(strsql)
+	if stmt != nil {
+		defer stmt.Close()
+	}
+	if err != nil {
+		return 0
+	}
+	rows, err := stmt.Query(1)
+	if rows != nil {
+		defer rows.Close()
+	}
+	if err != nil {
+		return 0
+	}
+
+	var height uint32
+	for rows.Next() {
+		if err = rows.Scan(&height); err != nil {
+			return 0
+		} else {
+			return height
+		}
+	}
+	return 0
+}
+
+func LoadLayer2Commit_Unconfirmed() []string {
 	strsql := "select txhash from layer2commit where state = ?"
 	stmt, err := DefDB.Prepare(strsql)
 	if stmt != nil {
