@@ -1,16 +1,36 @@
+/*
+ * Copyright (C) 2020 The ontology Authors
+ * This file is part of The ontology library.
+ *
+ * The ontology is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * The ontology is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
 package core
 
 import (
 	"encoding/hex"
 	"fmt"
 	layer2_sdk "github.com/ontio/layer2/go-sdk"
-	"github.com/ontio/layer2/operator/config"
-	"github.com/ontio/layer2/operator/log"
 	layer2_common "github.com/ontio/layer2/node/common"
 	layer2_types "github.com/ontio/layer2/node/core/types"
+	"github.com/ontio/layer2/operator/config"
+	"github.com/ontio/layer2/operator/log"
 	ontology_sdk "github.com/ontio/ontology-go-sdk"
 	ontology_common "github.com/ontio/ontology/common"
 	"math/rand"
+	"sync"
 	"time"
 )
 
@@ -28,6 +48,7 @@ type Layer2Operator struct {
 	depositChain        chan *Deposit
 	msgChan             chan *Layer2CommitMsg
 	exitChan            chan int
+	mu                  sync.Mutex
 
 	// use for test
 	fortest              int
@@ -175,7 +196,7 @@ func (this *Layer2Operator) Start() error {
 	}
 	 */
 	{
-		currentHeight := GetLastestLayer2Commit()
+		currentHeight := GetLayer2CommitHeight()
 		this.layer2ChainInfo.Height = currentHeight
 		log.Infof("layer2 current height: %d", this.layer2ChainInfo.Height)
 	}
@@ -330,6 +351,7 @@ func (this *Layer2Operator) depositLoop() {
 				err := this.commitDeposit2Layer2(deposit)
 				if err != nil {
 					log.Errorf("commit deposit 2 alyer2 error: %s", err.Error())
+					time.Sleep(time.Second * 1)
 				} else {
 					break
 				}
@@ -379,7 +401,6 @@ func (this *Layer2Operator) commitDeposit2Layer2(deposit *Deposit) error {
 
 func (this *Layer2Operator) MonitorLayer2Chain() {
 	updateTicker := time.NewTicker(time.Second * 1)
-	counter := 0
 	for {
 		select {
 		case <- updateTicker.C:
@@ -389,22 +410,19 @@ func (this *Layer2Operator) MonitorLayer2Chain() {
 				continue
 			}
 
+			this.mu.Lock()
 			log.Infof("chain %s current height: %d, parser height: %d", this.layer2ChainInfo.Name, currentHeight, this.layer2ChainInfo.Height)
 			if this.layer2ChainInfo.Height >= currentHeight {
+				this.mu.Unlock()
 				continue
 			}
-			for this.layer2ChainInfo.Height < currentHeight-1 {
-				if counter > 600 {
-					this.layer2ChainInfo.Height --
-				}
-				commitHeight := GetLastestLayer2Commit()
+			for this.layer2ChainInfo.Height < currentHeight - 1 {
+				commitHeight := GetLayer2CommitHeight()
 				if commitHeight < this.layer2ChainInfo.Height {
-					counter ++
 					break
 				}
 
 				this.layer2ChainInfo.Height ++
-				counter = 0
 				err = this.parseLayer2ChainBlock(this.layer2ChainInfo)
 				if err != nil {
 					fmt.Println(err)
@@ -413,6 +431,7 @@ func (this *Layer2Operator) MonitorLayer2Chain() {
 				}
 				SetChainParseHeight(this.layer2ChainInfo.Id, this.layer2ChainInfo.Height)
 			}
+			this.mu.Unlock()
 		case <- this.exitChan:
 			updateTicker.Stop()
 			log.Infof("chain %s, exit!", this.layer2ChainInfo.Name)
@@ -487,7 +506,7 @@ func (this *Layer2Operator) parseLayer2ChainBlock(chain *ChainInfo) error {
 				withdraw.TxHash = event.TxHash
 				withdraw.TT = tt
 				withdraw.Height = chain.Height
-				withdraw.State = WITHDRAW_INT
+				withdraw.State = WITHDRAW_INIT
 				withdraw.ToAddress = transferFrom
 				withdraw.Amount = transferAmount
 				withdraw.TokenAddress = revertHexString(notify.ContractAddress)
@@ -516,6 +535,7 @@ func (this *Layer2Operator) commitMsgLoop() {
 				err := this.commitLayer2State2Ontology(msg)
 				if err != nil {
 					log.Errorf("commit layer2 state to ontology err: %s", err.Error())
+					time.Sleep(time.Second * 1)
 				} else {
 					break
 				}
@@ -543,7 +563,14 @@ func (this *Layer2Operator) commitLayer2State2Ontology(msg *Layer2CommitMsg) err
 		tokenAddress, _ := hex.DecodeString(withdraw.TokenAddress)
 		assetAddress = append(assetAddress, tokenAddress)
 	}
-	tx, err := this.ontologySdk.NeoVM.NewNeoVMInvokeTransaction(500, 40000, contractAddress, []interface{}{"updateState", []interface{}{
+	result, err := this.ontologySdk.NeoVM.PreExecInvokeNeoVMContract(contractAddress, []interface{}{"updateState", []interface{}{
+		msg.Layer2State.StatesRoot.ToHexString(), msg.Layer2State.Height, string(msg.Layer2State.Version),
+		depositids, withdrawAmounts,toAddresses,assetAddress}})
+	if err != nil {
+		return fmt.Errorf("pre exec layer2 state commit error! err: %s", err.Error())
+	}
+	gasLimit := result.Gas
+	tx, err := this.ontologySdk.NeoVM.NewNeoVMInvokeTransaction(500, gasLimit, contractAddress, []interface{}{"updateState", []interface{}{
 		msg.Layer2State.StatesRoot.ToHexString(), msg.Layer2State.Height, string(msg.Layer2State.Version),
 		depositids, withdrawAmounts,toAddresses,assetAddress}})
 	if err != nil {
@@ -560,6 +587,7 @@ func (this *Layer2Operator) commitLayer2State2Ontology(msg *Layer2CommitMsg) err
 		txHash, err = this.ontologySdk.SendTransaction(tx)
 		if err != nil {
 			log.Errorf("send layer2 state commit transaction failed! err: %s, try again......", err.Error())
+			time.Sleep(time.Second * 1)
 		} else {
 			break
 		}
@@ -578,51 +606,82 @@ func (this *Layer2Operator) commitLayer2State2Ontology(msg *Layer2CommitMsg) err
 }
 
 func (this *Layer2Operator) checkMsgLoop() {
-	updateTicker := time.NewTicker(time.Second * 1)
-	for {
-		select {
-		case <-updateTicker.C:
-			this.checkLayer2State()
-		}
+	for true {
+		this.checkLayer2State()
+		time.Sleep(time.Second * 1)
 	}
 }
 
 func (this *Layer2Operator) checkLayer2State() {
-	txHashs := LoadLayer2Commit()
-	for _, txHash := range txHashs {
-		event, err := this.ontologySdk.GetSmartContractEvent(txHash)
-		if err != nil {
-			log.Errorf("get smart contract event failed! hash: %s, err: %s", txHash, err.Error())
-			continue
-		}
-		heigth, err := this.ontologySdk.GetBlockHeightByTxHash(txHash)
-		if err != nil {
-			log.Errorf("get tx height failed! hash: %s, err: %s", txHash, err.Error())
-			continue
-		}
-		if event == nil {
-			log.Infof("layer2 commit: %s is not finished.", txHash)
-			continue
-		}
-		for _, notify := range event.Notify {
-			states := notify.States.([]interface{})
-			method, _ := hex.DecodeString(states[0].(string))
-			if string(method) == "updateDepositState" {
+	txHashs := LoadLayer2Commit_Unconfirmed()
+	txConfirmed := make([]int, len(txHashs))
+	for i := 0;i < len(txHashs);i ++ {
+		txConfirmed[i] = 100
+	}
+	for true {
+		for i, confirmed := range txConfirmed {
+			txHash := txHashs[i]
+			if confirmed <= 0 {
+				continue
+			} else if confirmed == 1 {
+				UpdateLayer2Commit(txHash, uint64(0), LAYER2MSG_FAILED)
+				log.Infof("layer2 commit: %s is failed.", txHash)
+				txConfirmed[i] = 0
+				this.mu.Lock()
+				this.layer2ChainInfo.Height --
+				this.mu.Unlock()
+				continue
+			}
 
-			} else if string(method) == "withdraw" {
+			event, err := this.ontologySdk.GetSmartContractEvent(txHash)
+			if err != nil {
+				log.Errorf("get smart contract event failed! hash: %s, err: %s", txHash, err.Error())
+				txConfirmed[i] --
+				continue
+			}
+			heigth, err := this.ontologySdk.GetBlockHeightByTxHash(txHash)
+			if err != nil {
+				log.Errorf("get tx height failed! hash: %s, err: %s", txHash, err.Error())
+				txConfirmed[i] --
+				continue
+			}
+			if event == nil {
+				log.Infof("layer2 commit: %s is not finished.", txHash)
+				txConfirmed[i] --
+				continue
+			}
+			for _, notify := range event.Notify {
+				states := notify.States.([]interface{})
+				method, _ := hex.DecodeString(states[0].(string))
+				if string(method) == "updateDepositState" {
 
-			} else if string(method) == "updateState" {
-				commitState := LAYER2MSG_COMMIT
-				if event.State == 1 {
-					commitState = LAYER2MSG_FINISH
+				} else if string(method) == "withdraw" {
+
+				} else if string(method) == "updateState" {
+					commitState := LAYER2MSG_COMMIT
+					if event.State == 1 {
+						commitState = LAYER2MSG_FINISH
+					}
+					UpdateLayer2Commit(event.TxHash, uint64(heigth), commitState)
+					log.Infof("layer2 commit: %s is finished.", txHash)
+					txConfirmed[i] = 0
+				} else {
+
 				}
-				UpdateLayer2Commit(event.TxHash, uint64(heigth), commitState)
-				log.Infof("layer2 commit: %s is finished.", txHash)
-			} else {
-
 			}
 		}
-
+		allConfired := true
+		for _, confirmed := range txConfirmed {
+			if confirmed > 0 {
+				allConfired = false
+				break
+			}
+		}
+		if allConfired == true {
+			break
+		} else {
+			time.Sleep(time.Second * 1)
+		}
 	}
 }
 
