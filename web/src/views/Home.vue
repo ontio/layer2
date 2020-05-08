@@ -184,7 +184,7 @@
 			<span slot="footer"
 				class="dialog-footer">
 				<el-button @click="sendVisible = false">{{$t('home.cancel')}}</el-button>
-				<el-button type="primary" v-loading="requesting"
+				<el-button type="primary" v-loading="requesting" :disabled="requesting"
 					@click="onSendSubmit">{{$t('home.submit')}}</el-button>
 			</span>
 		</el-dialog>
@@ -219,7 +219,7 @@
 			<span slot="footer"
 				class="dialog-footer">
 				<el-button @click="convertVisible = false">{{$t('home.cancel')}}</el-button>
-				<el-button type="primary"  v-loading="requesting"
+				<el-button type="primary"  v-loading="requesting" :disabled="requesting"
 					@click="onConvertSubmit">{{$t('home.submit')}}</el-button>
 			</span>
 		</el-dialog>
@@ -365,7 +365,6 @@ export default {
 			this.sendVisible = true;
 		},
 		onConvert(token) {
-            debugger
             this.convertForm.from = token
             this.onSelectConvertFrom(token)
 			this.convertVisible = true;
@@ -389,7 +388,7 @@ export default {
                 if(res.Error === 0) {
                     this.$message.success(this.$t('home.transactionSuccess'))    
                 } else {
-                    this.$message.fail(res.message || this.$t('home.transactionFail'))    
+                    this.$message.error(res.message || this.$t('home.transactionerror'))    
                 }
             })
         },
@@ -403,18 +402,19 @@ export default {
                 if(res.Error === 0) {
                     this.$message.success(this.$t('home.transactionSuccess'))    
                 } else {
-                    this.$message.fail(res.message || this.$t('home.transactionFail'))    
+                    this.$message.error(res.message || this.$t('home.transactionerror'))    
                 }
             })
             } else if(from === 'XONT' || from === 'XONG') {
                 this.requesting = true
+                
                 this.$store.dispatch('withdraw', {amount, asset:from}).then(res => {
                 this.convertVisible = false;
                 this.requesting = false
                 if(res.Error === 0) {
                     this.$message.success(this.$t('home.transactionSuccess'))    
                 } else {
-                    this.$message.fail(res.message || this.$t('home.transactionFail'))    
+                    this.$message.error(res.message || this.$t('home.transactionerror'))    
                 }
             })
             }
