@@ -128,6 +128,7 @@ export default new Vuex.Store({
                 dispatch('getBalance', state.address)
                 return res;
             } catch (err) {
+                console.log(err)
                 return err
             }
             
@@ -149,11 +150,17 @@ export default new Vuex.Store({
             const privateKey = new Crypto.PrivateKey(state.privateKey)
             TransactionBuilder.signTransaction(tx, privateKey);
             const socketClient = new WebsocketClient(state.layer2_socket)
-            const response = await socketClient.sendRawTransaction(tx.serialize(), false, true);
-            // tslint:disable:no-console
-            console.log(JSON.stringify(response));
-            dispatch('getBalance', state.address)
-            return response
+            try {
+                const response = await socketClient.sendRawTransaction(tx.serialize(), false, true);
+                // tslint:disable:no-console
+                console.log(JSON.stringify(response));
+                dispatch('getBalance', state.address)
+                return response
+            } catch (err) {
+                console.log(err)
+                return err
+            }
+            
         },
         async sendToken({ commit, dispatch, state }, { amount, to, token }) {
             const payer = new Crypto.Address(state.address);
@@ -173,21 +180,31 @@ export default new Vuex.Store({
                 const privateKey = new Crypto.PrivateKey(state.privateKey)
                 TransactionBuilder.signTransaction(tx, privateKey);
                 const socketClient = new WebsocketClient(state.layer2_socket)
-                const response = await socketClient.sendRawTransaction(tx.serialize(), false, true);
-                // tslint:disable:no-console
-                console.log(JSON.stringify(response));
-                dispatch('getBalance', state.address)
-                return response
+                try {
+                    const response = await socketClient.sendRawTransaction(tx.serialize(), false, true);
+                    // tslint:disable:no-console
+                    console.log(JSON.stringify(response));
+                    dispatch('getBalance', state.address)
+                    return response
+                } catch (err) {
+                    return err
+                }
+                
             } else {
                 const tx = OntAssetTxBuilder.makeTransferTx(assetV, payer, receiver, amountV, '500', '200000', payer);
                 const privateKey = new Crypto.PrivateKey(state.privateKey)
                 TransactionBuilder.signTransaction(tx, privateKey);
                 const socketClient = new WebsocketClient()
-                const response = await socketClient.sendRawTransaction(tx.serialize(), false, true);
-                // tslint:disable:no-console
-                console.log(JSON.stringify(response));
-                dispatch('getBalance', state.address)
-                return response
+                try {
+                    const response = await socketClient.sendRawTransaction(tx.serialize(), false, true);
+                    // tslint:disable:no-console
+                    console.log(JSON.stringify(response));
+                    dispatch('getBalance', state.address)
+                    return response
+                } catch (err) {
+                    return err
+                }
+                
             }
             
         }
