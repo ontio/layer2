@@ -5,22 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build:prod": "vue-cli-service build",
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
     "build:test": "vue-cli-service build --mode test",
     "build:pre": "vue-cli-service build --mode pre"
-=======
-    "build:test": "vue-cli-service build --mode test"
->>>>>>> update for layer2 web
-=======
-    "build:test": "vue-cli-service build --mode test",
-    "build:pre": "vue-cli-service build --mode pre"
->>>>>>> update config
-=======
-    "build:test": "vue-cli-service build --mode test",
-    "build:pre": "vue-cli-service build --mode pre"
->>>>>>> update config
   },
   "dependencies": {
     "bignumber.js": "^9.0.0",
