@@ -34,6 +34,7 @@ import (
 )
 
 var ConfigPath string
+var mgr *core.Layer2Operator
 
 func init() {
 	flag.StringVar(&ConfigPath, "cfg", config.DEFAULT_CONFIG_FILE_NAME, "config file of server")
@@ -86,6 +87,7 @@ func waitToExit() {
 	go func() {
 		for sig := range sc {
 			log.Infof("waitToExit - Layer2 Operator received exit signal:%v.", sig.String())
+			mgr.Stop()
 			close(exit)
 			break
 		}
@@ -94,8 +96,9 @@ func waitToExit() {
 }
 
 func initOperatorServer(servConfig *config.ServiceConfig) {
-	mgr, err := core.NewLayer2Operator(servConfig)
-	if err != nil {
+	var err error
+	mgr, err = core.NewLayer2Operator(servConfig)
+	if err != nil || mgr == nil {
 		log.Error("initOperatorServer failed!")
 		return
 	}

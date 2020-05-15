@@ -28,22 +28,6 @@ DepositEvent('deposit', currentId, player, amount, height, state, assetAddress)
 ```
 currentId, player, amount, height, state, assetAddress分别代表depositId，玩家地址，存入金额，高度，状态，资产地址。
 
-### withdraw(withdrawId)
-该方法由用户调用
-
-#### 参数
-withdrawId用于用户从合约中赎回withdrawId对应的金额
-
-#### 返回值
-如果调用成功返回True，否则返回False
-
-#### Notify
-```
-WithdrawEvent('withdraw', 'withdrawId', 'amount', 'toAddress', 'height', 'status', 'assetAddress')
-
-```
-'withdrawId', 'amount', 'toAddress', 'height', 'status', 'assetAddress'分别代表withdrawId，赎回金额，出金地址，当前layer2节点高度，状态，资产地址。
-
 ### updateState(stateRootHash, height, version, depositIds, withdrawAmounts, toAddresses, assetAddresses)
 该方法由operator地址调用，用于更新节点状态信息。
 
