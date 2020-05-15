@@ -1,6 +1,6 @@
 # Ontology Layer2
 
-English|[中文](design_CN.md)
+中文|[English](README.md)
 
 ## 名称解释
 
@@ -62,9 +62,7 @@ Operator是Layer2的安全守护程序，负责监听Ontology主链是否有到L
 
 4.	主链合约执行Withdraw请求，记录一笔withdraw资金记录，并设置状态为“未释放”。
 
-5.	在State确认后，用户提交withdraw释放请求。
-
-6.	主链合约执行withdraw释放请求，给目标账户转账，同时设置withdraw记录为“已释放“
+5.	在State确认后，主链合约执行withdraw释放请求，给目标账户转账，同时设置withdraw记录为“已释放“
 
 <div align=center><img width="499" height="450" src="doc/pic/user_withdraw.png"/></div>
 
@@ -79,39 +77,6 @@ Operator是Layer2的安全守护程序，负责监听Ontology主链是否有到L
 ### 用户Layer交易以及安全保证流程
 
 <div align=center><img width="650" height="450" src="doc/pic/system.png"/></div>
-
-###	合约部署
-
-1.	用户提交合约以及合约部署的Layer2交易到Node。
-
-2.	Node部署合约并打包该交易到Layer2区块
-
-3.	Layer2区块同步到Challenger后，Challenger部署合约。
-
-###	合约交易
-
-1.	用户构造合约的Layer2交易并提交给Node。
-
-2.	Node执行合约交易，生成新的state，打包该交易以及其他交易到一个Layer2区块，提交这个Layer2区块State到Ontology主链。
-
-3.	等待State确认
-
-## 安全模型
-
-### 区块State验证
-
-Node提交Layer2区块State到主链时，这个State是没有验证的，这个State其实是不安全的，我们通过Challenger角色来解决这个问题，Collector将Layer2区块同步给Challenger，Challenger执行Layer2区块中的交易，验证Layer2区块State。
-
-这要求Node必须将Layer2区块同步给Challenger。
-Node和Challenger联合是可以作恶的。
-需要一个State的确认周期。
-
-为防止Node作恶，我们需要欺诈证明，欺诈证明包括上一个状态的SMT，Layer2区块，在合约中验证欺诈证明时，需要合约验证Layer2区块中交易，区块，执行Layer2交易（此处不包括合约交易，因为合约交易还依赖其上一个状态，合约交易问题在后面详述）来计算新的state。(如何验证区块，我们还需要在Ontology主链上提交Laery区块的Hash)
-
-以上欺诈证明有一个前提是要求Node同步Layer2区块给Challenger。
-
-对于Challenger，有欺诈证明Node作恶，Challenger需要向Ontology主链提交欺诈证明和保证金来挑战，提交保证金的目的是防止恶意挑战。对于成功证明Node作恶的Challenger，Challenger可以获取奖励，作恶的Node将收到惩罚。（这要求Node在主链有抵押资产）
-
 
 ## 账户模型
 

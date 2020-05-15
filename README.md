@@ -1,154 +1,125 @@
 # Ontology Layer2
 
-English|[中文](design_CN.md)
+English | [中文](README_CN.md)
 
-## 名称解释
+## Key Terminology
 
-### Layer2交易
+### Layer2 Transactions
 
-用户在Layer2进行转账或者执行合约的请求，用户已经对其签名。这个交易可以和Ontology主链的交易格式一样，也可以不一样。
+A transaction or an execution request carried out on Layer2. The user authorizes the action by signing it. A transaction transmitted on the Layer2 may or may not have the same format as a standard transaction on the Ontology main chain.
 
 ### Node
 
-Node是Layer2交易收集器，它负责收集用户的Layer2交易，验证并执行交易，每生成一个Layer2区块，Node负责执行区块中的交易，更新状态，并生成Layer2合约可以解释的、用于安全性保证的状态证明。
+A Layer2 node collects all the user transactions, verifies them, and then executes them. The node is mainly responsible for executing the transactions that are part of a newly generated block, updates the state, and generates a state report that is readable by a Layer2 smart contract in order to set a security measure in place.
 
-### Layer2区块
+### Layer2 Block
 
-Node周期性的打包收集到的Layer2交易，生成一个包含这期间所有Layer2交易的区块，产生一个新的Layer2区块。
+A node periodically generates Layer2 blocks by collecting the transactions for a particular cycle and encapsulating them in a block.
 
 ### Layer2 State
 
-Node执行Layer2区块中打包的交易，更新状态，将所有更新的状态数据排序生成一个Merkle树，计算Merkle树的根hash，该根hash即为该区块的Layer2 State。
+When a node generates a block containing the transactions for a cycle and updates the state, all the relevant updated state data is sorted to generate a merkle tree. This merkle tree's root hash is then calculated, which is the Layer2 state for the corresponding block.
 
 ### Operator
 
-Operator是Layer2的安全守护程序，负责监听Ontology主链是否有到Layer2的代币转移或者Layer2都Ontology主链的代币转移交易，同时Operator还负责周期性的将Layer2的状态证明提交到Ontology主网作为证明。
+The operator is a security daemon on Layer2 that monitors the transactions on Layer2 and verifies whether the sent tokens are transferred successfully to the Ontology main chain. The operator also periodically sends the Layer2 state proof to the Ontology main chain as evidence of transactions having taken place on Layer2.
 
 ### Challenger
 
-负责验证Operator提交到Ontology主链的状态证明。这要求Challenger从Operator或者链上同步Layer2交易，维护完整的全局状态。在Challenger同步执行交易并更新状态后，可以验证Operator提交在Ontology主网的状态证明正确性，如果不正确，Challenger可以生成Layer2合约可以解释的欺诈证明挑战Operator。
+The challenger verifies the state proof submitted by the operator to the Ontology main chain. This would require the challenger to synchronize all the transactions that have taken place on Layer2 and maintain a complete state record. Upon synchronizing the executed transactions and updating the state, the challenger can confirm the validity of the state proof submitted by the operator to the main net. If found invalid, the challenger can generate a proof of fraud that can be read by the Layer2 contract to dispute the operator.
 
-### 账户状态证明
 
-包括账户状态信息以及其Merkle证明，可以从Operator和Challenger查询来获取。只有他们维护有完整的全局状态。
+### Account State Proof
 
-### 欺诈证明
+An account state proof includes the account state along with it's merkle proof. The state proof can be fetched from the operator and the challenger, since they both maintain complete state records.
 
-欺诈证明包含当前Layer2区块更新之前账户状态证明。因为有以前Layer2区块的状态证明以及提交的账户状态证明，可以证明更新之前旧状态的合法性，在旧状态合法的情况下，运行当前区块即可证明新的状态证明合法性。
+### Proof of Fraud
 
-## 工作流程
+The proof of fraud contains the account state proof before the current Layer2 block updated it. Since both state proofs are available, the legitimacy of the state proof before the current block updation can be verified. The current state proof can be verified by running the current block.
 
-###	Deposit到Layer2
+## Operation Process Flow
 
-1.	用户在Ontology主链进行deposit操作，主链合约锁定用户Deposit的资金，记录这笔资金在Layer2的状态，此时状态为“未释放”。
+### Deposit on Layer2
 
-2.	Operator查询到主链Ontology上有deposit操作，Operator会提交deposit到Layer2 Node。
+1.	The user carries out a deposit action on the Ontology main chain. The contract locks the user's deposit amount and records it in the Layer2 state. The current state of this deposit amount is "unreleased".
 
-3.	Node将该交易和收集的其他用户交易一起打包到一个新的Layer2区块，执行Layer2区块，生成新的Layer2 State。
+2.	The operator detects the deposit action on the main chain and submits the deposit transaction details to the Layer2 node.
 
-4.	Operator会监听Layer2 Node新的区块，提交新的Layer2 State到Ontology主链时，会附带提交deposit已经释放的请求。
+3.	The node creates a new Layer2 block that encapsulates the deposit transaction along with transactions from different users. The Layer2 state is then updated when this block is executed.
 
-5.	主链合约执行deposit释放操作，修改deposit资金状态为“已释放”。
+4.	An operator monitors the Layer2 nodes and the new blocks generated. When the updated Layer2 state is sent to the Ontology main chain, along with the request to release the deposit amount on the main chain.
+
+5.	The main chain releases the deposit amount and updates the deposit amount state to released.
 
 <div align=center><img width="360" height="450" src="doc/pic/user_deposit.png"/></div>
 
-### Withdraw到Ontology
+### Withdrawal to Ontology
 
-1.	用户构造Withdraw的Layer2交易并提交给Node。
+1.	The user creates a Layer2 withdrawal transaction and sends it to the node.
 
-2.	Node根据Withdraw修改其State，同时打包该Withdraw交易以及其他用户交易一起到一个Layer2区块。
+2.	The node updates the state based on the withdrawal amount and generates a Layer2 block including the rest of the transactions.
 
-3.	Operator提交这个Layer2区块State到Ontology主链时，会附带提交withdraw请求。
+3.	The operator sends the Layer2 block state to the Ontology main chain along with the withdrawal request.
 
-4.	主链合约执行Withdraw请求，记录一笔withdraw资金记录，并设置状态为“未释放”。
+4.	The main chain contract carries out the withdrawal transaction request and records the withdrawal action, and then sets the state to not released.
 
-5.	在State确认后，用户提交withdraw释放请求。
+5.	Once the state is confirmed, the user sends a withdrawal release request.
 
-6.	主链合约执行withdraw释放请求，给目标账户转账，同时设置withdraw记录为“已释放“
+6.	The main chain processes and executes the withdrawal release request, sends the withdrawal amount to the target account, and sets the withdraw state to released.
 
 <div align=center><img width="499" height="450" src="doc/pic/user_withdraw.png"/></div>
 
-###	用户Layer交易
+###	User Layer Transactions
 
-1.	用户构造Transfer的Layer2交易并提交给Node。
+1.	The user creates a Layer2 transfer transaction and sends it to the node.
 
-2.	Node打包该transfer交易以及其他交易到一个Layer2区块，执行区块中的交易，提交这个Layer2区块State到Ontology主链。
+2.	The node encapsulates the transactions including this transfer transaction to create a Layer2 block. The transactions of this block are executed by Layer2, and the updated block state is then sent to the Ontology main chain.
 
-3.	等待State确认。
+3.	System then awaits state confirmation.
 
-### 用户Layer交易以及安全保证流程
+### Transactions and Security Measures
 
 <div align=center><img width="650" height="450" src="doc/pic/system.png"/></div>
 
-###	合约部署
+## Account Infrastructure
 
-1.	用户提交合约以及合约部署的Layer2交易到Node。
-
-2.	Node部署合约并打包该交易到Layer2区块
-
-3.	Layer2区块同步到Challenger后，Challenger部署合约。
-
-###	合约交易
-
-1.	用户构造合约的Layer2交易并提交给Node。
-
-2.	Node执行合约交易，生成新的state，打包该交易以及其他交易到一个Layer2区块，提交这个Layer2区块State到Ontology主链。
-
-3.	等待State确认
-
-## 安全模型
-
-### 区块State验证
-
-Node提交Layer2区块State到主链时，这个State是没有验证的，这个State其实是不安全的，我们通过Challenger角色来解决这个问题，Collector将Layer2区块同步给Challenger，Challenger执行Layer2区块中的交易，验证Layer2区块State。
-
-这要求Node必须将Layer2区块同步给Challenger。
-Node和Challenger联合是可以作恶的。
-需要一个State的确认周期。
-
-为防止Node作恶，我们需要欺诈证明，欺诈证明包括上一个状态的SMT，Layer2区块，在合约中验证欺诈证明时，需要合约验证Layer2区块中交易，区块，执行Layer2交易（此处不包括合约交易，因为合约交易还依赖其上一个状态，合约交易问题在后面详述）来计算新的state。(如何验证区块，我们还需要在Ontology主链上提交Laery区块的Hash)
-
-以上欺诈证明有一个前提是要求Node同步Layer2区块给Challenger。
-
-对于Challenger，有欺诈证明Node作恶，Challenger需要向Ontology主链提交欺诈证明和保证金来挑战，提交保证金的目的是防止恶意挑战。对于成功证明Node作恶的Challenger，Challenger可以获取奖励，作恶的Node将收到惩罚。（这要求Node在主链有抵押资产）
-
-
-## 账户模型
-
-账户使用Merkle树的方式来组织，但这是一个可以跟踪更新的Merkle树。Merkle树包含了更新之前的Root Hash和更新的账户.
+An account is created using a trackable Merkle tree data structure. A merkle tree contains and maintains the original root hash and the updated account record.
 
 <div align=center><img width="450" height="660" src="doc/pic/account.png"/></div>
 
-每个State Root都固定对应一个高度，从0开始从下往上一次递增。我们需要在链上记录每个高度上的State Root。
+Every state root corresponds to a fixed height starting from 0 at the bottom and progressively increasing towards the top. Each state root corresponding to each height is recorded on the chain.
 
-如何证明一个账户的状态？
+### How to Prove the Validity of an Account State?
 
-如果账户在高度为H时账户状态有更新，那么在高度为H的state树中包含有其账户状态，这是一个Merkle树，从全局看又是一个子树。但我们在链上有这个子树的root hash，这样可以在这个子树上生成Merkle proof，结合这个子树的root hash可以证明这个账户的状态。
+Say an account state gets updated at some arbitrary height. At this height, the state tree contains the current account state and exists as a Merkle tree in itself, a sub-tree with respect to the complete merkle tree. Now, the root hash of this sub-tree exists on the chain and can be used to generate the merkle proof. Thus, this root hash can be used to validate this account's current state.
 
-但这个账户可能不是最新的，因为后续的更新产生的新的Merkle树中包含了更新的账户状态。所以有挑战机制，挑战者只需要提交这个账户的Merkle proof，其root hash所在的高度更高，那么其挑战成功。
+But there is a possibility that this account state isn't the latest, since when the account state is updated so is the merkle tree subsequently. The challenge mechanism can be used to determine the account validity by submitting the account merkle proof. If the calculated root hash of this state is higher than that of the current block state, the challenge is considered successful.
 
-为什么要这种Merkle树？
+### Why is such a Merkle Tree Necessary?
 
-在链上只有每个高度的state root，有时候需要链上验证state变更的有效性。状态转换可以写成如下形式：
+The state root of all the heights of the merkle tree are recorded on the chain. This information can be used to verify the validity of account state at any given point of time as it gets updated. The change that takes place in account state can be represented to be a function in two variables in the following manner:
 
-S = F（S‘，Txs）
+**`S = F(S'，Txs)`**
 
-其中S‘是上一个状态，Txs是交易，S为执行Txs后生成的新状态。
+Here, `S'` is any arbitrary state, `Txs` is a transaction, and `S` is the new state that is obtained by updating `S'` upon execution of the transaction `Txs`. 
 
-最简单的链上验证状态转换方式是提交全局状态S‘和Txs，根据链上的S’的state root来验证全局状态S‘，在这个全局状态下执行Txs，生成一个新的全局状态S，根据链上S的state root来验证状态转换有效性。
+The simplest on-chain method of establishing the validity of a particular state is by sending the complete `S'` and `Txs` record to the chain. The validity of the updated state is established by comparing its state root to that of the on-chain state `S'`, which is calculated by executing the `Txs` transactions.
 
-但这个方式有许多问题：
+However, there are certain issues with this method, as stated below:
 
-1.	全局状态往往很大，无论数据量大小还是在这个全局状态下执行交易，都有很大的限制要求。
+1.	Calculating the state by executing all the transaction records is a process that usually has limitations, especially considering the fact that the total state usually consists of a very large number of transactions.
 
-Txs往往不会影响到全局所有状态，只是其中很小部分，只有很小部分状态有更新，以上账户模型只跟踪状态的更新，这里有一个新的实现方式。
+2. Under normal circumstances there is a very small no. of transactions that actually have an effect on the account state.
+   
 
-不提交全局状态的S‘，仅仅提交S’中会被Txs更新的局部状态以及其Merkle proof，在上面已经介绍过如何证明这个状态。在局部状态下执行Txs，生成更新的局部状态，再加上S‘的state root可以计算新的S的state root，从而验证状态转换的有效性。
+The small no. of accounts can be used to track the state changes, and this can be a new implementation method.
 
-有哪些好处：
+Instead of sending the complete `S'` it is possible to send the `Txs` transactions that update the state `S'` and their respective merkle proofs. We have already discussed how to validate this particular state. It is possible to calculate the new state root for `S` by partly executing the transactions, generating a new state, and then adding the `S'` state root to it. This can then be used to determine the validity the state change.
 
-1.	无论状态有多少，但只要每次更新的状态不大，那么其子树很小，其Merkle proof也比较小
+The advantages to using the above stated method are:
 
-2.	验证状态转换代价小，效率高，只需要提交较少的有更新需求的状态以及其很小的Merkle proof，就可以验证状态转换的有效性。
+1.	No matter how many total states there are, the number of sub-trees and their merkle proofs remains small if the number of updated states isn't too large.
 
-3.	可以证明一个状态更新过程
+2.	Lower state verification overhead with high efficiency since only a small number of transactions and merkle proofs needed to be provided in order to determine state validity.
+
+3.	It is possible to determine the updation process of a state.

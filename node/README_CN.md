@@ -19,7 +19,7 @@ Ontology Layer2致力于创建一个链下扩展方案，来满足用户低延�
 克隆Layer2仓库到 **$GOPATH/src/github.com/ontio** 目录
 
 ```
-$ git clone https://github.com/Layer2/node.git
+$ git clone https://github.com/ontio/layer2.git
 ```
 
 ### 编译
@@ -31,14 +31,14 @@ $ make all
 
 成功编译后会生成两个可以执行程序
 
-* `node`: 节点程序/以命令行方式提供的节点控制程序
+* `Node`: 节点程序/以命令行方式提供的节点控制程序
 
 ### 运行Layer Node
 
 直接启动Ontology
 
    ```
-	./node
+	./Node
    ```
 
 ## 许可证
