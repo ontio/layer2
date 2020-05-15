@@ -1,6 +1,6 @@
 # Layer2 User Deploy Guide
 
-[English](user_deploy_guide.md)|中文
+[English](Layer2_User_Deployment_Guide.md)|中文
 
 ## 背景
 

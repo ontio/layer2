@@ -1,77 +1,134 @@
-# Layer2合约
+# Layer2 Contract
 
-## Layer2合约接口
+English|[中文](README_CN.md)
 
-主网合约哈希为 xxxxxxxxxxx
+## Layer2 Contract API
 
-### init(operator, stateRoot, confirmHeight)
-该接口由operator节点调用，用于初始化合约
+Say the main net contract hash is `xxxxxxxxxxx`.
 
-#### 参数
-operator为layer2发起转账的地址，为Address类型，stateRoot为合约初始化的状态根，其类型为array，结构为[stateRootHash, height, version]，分别代表状态根，当前layer2节点高度，layer2协议的版本号，类型分别为bytearray，integer，string。
+## Method List
 
-#### 返回值
-如果调用成功返回True，否则返回False。
+|                                                  Method Name                                                  | Description                             |
+| :-----------------------------------------------------------------------------------------------------------: | --------------------------------------- |
+|                                 [init](#initoperator-stateroot-confirmheight)                                 | Initializes the Layer2 contract         |
+|                                 [deposit](#depositplayer-amount-assetaddress)                                 | Locks the user's assets in the contract |
+| [updateState](#updatestatestateroothash-height-version-depositids-withdrawamounts-toaddresses-assetaddresses) | Updates the layer2 node's current state        |
 
-### deposit(player, amount, assetAddress)
-该方法由用户调用，当用户想使用layer2的功能时调用该接口，用于将用户资产锁入合约。
+## init(operator, stateRoot, confirmHeight)
 
-#### 参数
-player, amount, assetAddress 分别为玩家地址，参与的金额，资产地址
+This interface method is invoked by the operator to initialize the Layer2 contract.
 
-#### 返回值
-如果调用成功返回True，否则返回False
+|   Parameter   |  Type   | Description                                            |
+| :-----------: | :-----: | ------------------------------------------------------ |
+|   operator    | address | Address of the account that commit layer2 state to layer2 contract deployed on Ontology main net |
+|   stateRoot   |  array  | The state root of layer2 node used to initialize the contract             |
+| confirmHeight | integer | Height to confirm state finalty                        |
 
-#### Notify
-```
+The `stateRoot` array contains the following fields:
+
+|     Field     |   Type    | Description                    |
+| :-----------: | :-------: | ------------------------------ |
+| stateRootHash | bytearray | State root hash                |
+|    height     |  integer  | Current Layer2 node height     |
+|    version    |  string   | Layer2 protocol version number |
+
+The interface method returns a `True` upon successful invocation, else `False`.
+
+## deposit(player, amount, assetAddress)
+
+This method is invoked by the user. This method is invoked when a user wants to use a Layer2 feature, and it locks the user's assets into the contract.
+
+**Method Parameters**
+
+|  Parameter   | Type      | Description    |
+| :----------: | --------- | -------------- |
+|    player    | address   | Payer address  |
+|    amount    | integer   | Deposit amount |
+| assetAddress | bytearray | Asset address  |
+
+The method returns `True` upon successful invocation, else returns `False`.
+
+The notification event for the deposit event is as follows:
+
+```py
 DepositEvent('deposit', currentId, player, amount, height, state, assetAddress)
 ```
-currentId, player, amount, height, state, assetAddress分别代表depositId，玩家地址，存入金额，高度，状态，资产地址。
 
-### updateState(stateRootHash, height, version, depositIds, withdrawAmounts, toAddresses, assetAddresses)
-该方法由operator地址调用，用于更新节点状态信息。
+The data obtained from the notification event is:
 
-#### 参数
-stateRootHash, height, version, depositIds, withdrawAmounts, toAddresses, assetAddresses分别代表节点状态根，高度，版本号，需要更新状态depositId，withdraw金额集合，转移金额地址集合，转移资产地址集合。
+|    Field     | Description                                |
+| :----------: | ------------------------------------------ |
+|  currentId   | Deposit ID                                 |
+|    player    | Player address                             |
+|    amount    | Deposit amount                             |
+|    height    | Block height for respective deposit action |
+|    state     | The state of this transaction              |
+| assetAddress | Asset contract address                     |
 
-#### 返回值
-调用成功返回True，否则返回False
 
-#### Notify
-```
+## updateState(stateRootHash, height, version, depositIds, withdrawAmounts, toAddresses, assetAddresses)
+
+This method is invoked using the operator address and is used to update the node state information.
+
+**Method Parameters**
+
+
+|    Parameter    | Decsription                                        |
+| :-------------: | -------------------------------------------------- |
+|  stateRootHash  | Node state root hash                               |
+|     height      | Block height                                       |
+|     version     | Layer2 protocol version                            |
+|   depositIds    | Deposit IDs whose state has updated on layer2 node |
+| withdrawAmounts | Amount has withdrawn on layer2 node |
+|   toAddresses   | Destination account addresses has withdrawn on layer2 node                      |
+| assetAddresses  | Asset addresses has withdrawn on layer2 node                             |
+
+The method returns `True` upon successful invocation, else returns `False`.
+
+
+The notification event for the respective events are as follows: 
+
+```py
 Notify(['updateState', stateRootHash, height, version, depositIds, withdrawAmounts, toAddresses, assetAddresses])
 Notify(['updateDepositState', depositId])
 WithdrawEvent(id, withdrawAmount, toAddresse, height, status, assetAddress)
 ```
-## 安装Layer2合约
 
-在ontology主链安装Layer2合约包括两步：
+## Setting up Layer2 Contract
 
-1 在ontology主链部署合约
+The process involves two major steps:
 
-2 初始化合约
+1. Deploy the contract on the Ontology main net
+2. Initialize the deployed contract
 
-### 部署合约到ontology
+### Deploying a Contract on Ontology 
 
-在ontology合约开发工具smartx上按照指定合约开发部署流程将Layer2合约部署到ontology主链，在成功部署Layer2合约后，我们得到Layer2合约地址。
+Ontology's online smart contract development IDE SmartX can be used to write, compile, deploy the Layer2 smart contract on Ontology main net. Once the Layer2 contract is deployed successfully, we will obtain the contract address.
 
-smartx工具web地址： https://smartx.ont.io/#/
+**SmartX web address:** https://smartx.ont.io/#/
 
-Layer2合约代码： https://github.com/ontio/layer2/blob/master/contract/layer2.py
+> Please note that SmartX is currently supported on Chrome browser only.
 
-### 初始化合约
+**Layer2 contract template:** https://github.com/ontio/layer2/blob/master/contract/layer2.py
 
-继续在ontology合约开发工具smartx上初始化合约，在smartx上成功部署合约到ontology后，执行该合约的init方法来初始化合约。
+
+### Initializing the Contract
+
+After successful deployment, the contract can be initialized using SmartX by executing the `init()` method.
 
 ![](pic/init_smart.jpg)
 
-该合约接口有三个参数：
-Address数据类型的operator、Array类型的stateRoot、Integer类型的confirmHeight。
+The `init()` method takes three parameters.
 
-operator指定了Laye2安全守护账户，安全守护账户会将Layer2最新状态提交到该Layer2合约作为证明，当在链下的Layer2有作恶或者纠纷时，可以依据此证明在链上裁决。ontology的安全守护账户就是第一步生成的ontology账户。
+|   Parameter   |  Type   | Description                                                                                                                                                                                            |
+| :-----------: | :-----: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+|   Operator    | Address | Layer2 security daemon account address, sends latest Layer2 state to the contract as proof to facilitate on-chain arbitration in case of off-chain malice by Layer2, Ontology main net account address |
+|   stateRoot   |  Array  | Defines Layer2 genesis state                                                                                                                                                                           |
+| confirmHeight | Integer | Height to determine state finalty and validity of withdraw action after the transaction has taken place                                                                                                |
 
-stateRoot指定了Layer2的创世状态，如以下创世状态
-```
+Sample `stateRoot`:
+
+```json
 [
     {
         "type": "ByteArray",
@@ -87,10 +144,8 @@ stateRoot指定了Layer2的创世状态，如以下创世状态
     }
 ]
 ```
-ByteArray的"0000000000000000000000000000000000000000000000000000000000000000"是Layer2账户状态树根hash，表明了Layer2在创世状态下账户状态为空。
-
-Integer的0是状态高度，初始为0。
-
-String的"1.0.0"是版本，当前版本为1.0.0。
-
-confirmHeight指定了用户在Layer2进行withdraw后，需要多少个状态高度来确认withdraw有效。
+| Field Type | Value Description                                                                                                                               |
+| :--------: | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Bytearray  | Layer2 account state root hash, `0000000000000000000000000000000000000000000000000000000000000000` indicates account state was empty at genesis |
+|  Integer   | Block height at the respective state, initialized with `0`                                                                                      |
+|   String   | Version no., current version number is `1.0.0`                                                                                                  |

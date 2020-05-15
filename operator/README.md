@@ -1,24 +1,27 @@
 # Layer2 Operator
 
-Layer2 Operator是Layer2的安全守护程序，负责监听ontology主链是否有到Layer2的代币转移或者Layer2都ontology主链的代币转移交易，同时Operator还负责周期性的将Layer2的state提交到ontology主网作为证明。
+English|[中文](README_CN.md)
 
-## 安装Operator
+Layer2 operator is a security daemon that runs on Layer2. It monitors the Layer2 and Ontology main chain token transfer transactions and periodically sends the Layer2 state to the Ontology main chain as proof.
 
-### 安装Mysql
+## Operator Installation
 
-选择适合自己的平台环境来安装mysql，指导手册https://www.mysql.com/cn/products/community/
+### Installing MySQL
 
-Mysql安装完毕后，初始化数据库，在Mysql上创建layer2数据库：
-```
+Install MySQL on a suitable platform. For details on how to download and install MySQL please refer to https://www.mysql.com/products/community/
+
+After successfully installing and initializing the database system, create the Layer2 database in the following manner:
+
+```sql
 CREATE SCHEMA IF NOT EXISTS `layer2` DEFAULT CHARACTER SET utf8;
 USE `layer2`;
 
 DROP TABLE IF EXISTS `chain_info`;
 CREATE TABLE `chain_info` (
- `name` VARCHAR(100) NOT NULL COMMENT '链名称',
- `id`  INT(4) NOT NULL COMMENT '链id',
- `url` VARCHAR(256) NOT NULL COMMENT '访问链的url',
- `height` INT(4) NOT NULL COMMENT '解析的区块高度',
+ `name` VARCHAR(100) NOT NULL COMMENT 'Chain Name',
+ `id`  INT(4) NOT NULL COMMENT 'Chain ID',
+ `url` VARCHAR(256) NOT NULL COMMENT 'URL of accessing chain',
+ `height` INT(4) NOT NULL COMMENT 'Block height',
  PRIMARY KEY (`id`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
@@ -27,69 +30,72 @@ INSERT INTO `chain_info`(`name`,`id`,`url`,`height`) VALUES("layer2",2,"http://4
 
 DROP TABLE IF EXISTS `deposit`;
 CREATE TABLE `deposit` (
- `txhash`  VARCHAR(256) NOT NULL COMMENT '交易hash',
- `tt` INT(4) NOT NULL COMMENT '交易时间',
- `state` INT(1) NOT NULL COMMENT '交易状态',
- `height` INT(4) NOT NULL COMMENT '交易的高度',
- `fromaddress` VARCHAR(256) NOT NULL COMMENT '地址',
- `amount` BIGINT(8) NOT NULL COMMENT 'deposit的金额',
- `tokenaddress` VARCHAR(256) NOT NULL COMMENT '币地址',
- `id` INT(4) NOT NULL COMMENT '交易的高度',
- `layer2txhash` VARCHAR(256) DEFAULT NULL COMMENT 'layer2交易hash',
+ `txhash`  VARCHAR(256) NOT NULL COMMENT 'Transaction hash',
+ `tt` INT(4) NOT NULL COMMENT 'Transaction time',
+ `state` INT(1) NOT NULL COMMENT 'Transaction state',
+ `height` INT(4) NOT NULL COMMENT 'Transaction block height',
+ `fromaddress` VARCHAR(256) NOT NULL COMMENT 'Source address',
+ `amount` BIGINT(8) NOT NULL COMMENT 'Deposit amount',
+ `tokenaddress` VARCHAR(256) NOT NULL COMMENT 'Token contract address',
+ `id` INT(4) NOT NULL COMMENT 'ID',
+ `layer2txhash` VARCHAR(256) DEFAULT NULL COMMENT 'Layer2 transaction hash',
  PRIMARY KEY (`txhash`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `withdraw`;
 CREATE TABLE `withdraw` (
- `txhash`  VARCHAR(256) NOT NULL COMMENT '交易hash',
- `tt` INT(4) NOT NULL COMMENT '交易时间',
- `state` INT(1) NOT NULL COMMENT '交易状态',
- `height` INT(4) NOT NULL COMMENT '交易的高度',
- `toaddress` VARCHAR(256) NOT NULL COMMENT '地址',
- `amount` BIGINT(8) NOT NULL COMMENT 'deposit的金额',
- `tokenaddress` VARCHAR(256) NOT NULL COMMENT '币地址',
- `ontologytxhash` VARCHAR(256) DEFAULT NULL COMMENT '交易hash',
+ `txhash`  VARCHAR(256) NOT NULL COMMENT 'Transaction hash',
+ `tt` INT(4) NOT NULL COMMENT 'Transaction time',
+ `state` INT(1) NOT NULL COMMENT 'Transaction state',
+ `height` INT(4) NOT NULL COMMENT 'Transaction block height',
+ `toaddress` VARCHAR(256) NOT NULL COMMENT 'Destination address',
+ `amount` BIGINT(8) NOT NULL COMMENT 'Deposit amount',
+ `tokenaddress` VARCHAR(256) NOT NULL COMMENT 'Token contract address',
+ `ontologytxhash` VARCHAR(256) DEFAULT NULL COMMENT 'Transaction hash',
  PRIMARY KEY (`txhash`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `layer2tx`;
 CREATE TABLE `layer2tx` (
- `txhash`  VARCHAR(256) NOT NULL COMMENT '交易hash',
- `state` INT(1) NOT NULL COMMENT '交易状态',
- `tt` INT(4) NOT NULL COMMENT '交易时间',
- `fee` BIGINT(8) NOT NULL COMMENT '交易手续费',
- `height` INT(4) NOT NULL COMMENT '交易的高度',
- `fromaddress` VARCHAR(256) NOT NULL COMMENT '地址',
- `tokenaddress` VARCHAR(256) NOT NULL COMMENT '执行的合约',
- `toaddress` VARCHAR(256) NOT NULL COMMENT '地址',
- `amount` BIGINT(8) NOT NULL COMMENT 'deposit的金额',
+ `txhash`  VARCHAR(256) NOT NULL COMMENT 'Transaction hash',
+ `state` INT(1) NOT NULL COMMENT 'Transaction state',
+ `tt` INT(4) NOT NULL COMMENT 'Transaction time',
+ `fee` BIGINT(8) NOT NULL COMMENT 'Transaction fee',
+ `height` INT(4) NOT NULL COMMENT 'Transaction block height',
+ `fromaddress` VARCHAR(256) NOT NULL COMMENT 'Source address',
+ `tokenaddress` VARCHAR(256) NOT NULL COMMENT 'Token contract address',
+ `toaddress` VARCHAR(256) NOT NULL COMMENT 'Destination address',
+ `amount` BIGINT(8) NOT NULL COMMENT 'Deposit amount',
  PRIMARY KEY (`txhash`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `layer2commit`;
 CREATE TABLE `layer2commit` (
- `txhash`  VARCHAR(256) NOT NULL COMMENT '交易hash',
- `state` INT(1)  DEFAULT 0 COMMENT '交易状态',
- `tt` INT(4) DEFAULT 0 COMMENT '交易时间',
- `fee` BIGINT(8) DEFAULT 0 COMMENT '交易手续费',
- `ontologyheight` INT(4) DEFAULT 0 COMMENT '交易的高度',
- `layer2height` INT(4) DEFAULT 0 COMMENT '交易的高度',
- `layer2msg` VARCHAR(1024) NOT NULL COMMENT 'laeyr2 msg',
+ `txhash`  VARCHAR(256) NOT NULL COMMENT 'Transaction hash',
+ `state` INT(1)  DEFAULT 0 COMMENT 'Transaction state',
+ `tt` INT(4) DEFAULT 0 COMMENT 'Transaction time',
+ `fee` BIGINT(8) DEFAULT 0 COMMENT 'Transaction fee',
+ `ontologyheight` INT(4) DEFAULT 0 COMMENT 'Transaction block height',
+ `layer2height` INT(4) DEFAULT 0 COMMENT 'Transaction block height',
+ `layer2msg` VARCHAR(1024) NOT NULL COMMENT 'layer2 msg',
  PRIMARY KEY (`txhash`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 ```
 
-### 编译
+### Compilation
 
-```
+Run the following command in the directory with the `main.go` file.
+
+```go
 go build main.go
 ```
 
-### 配置
+### Configuration
 
-在源码目录下有config.json配置文件，是operator启动的配置文件。
-```
+The `config.json` configuration file in the source code directory is used to start the operator.
+
+```json
 {
   "OntologyConfig":{
     "RestURL":"http://polaris1.ont.io:20336",
@@ -114,10 +120,9 @@ go build main.go
   }
 }
 ```
-主要包括：
 
-ontology的访问配置：节点地址、以上第二步部署的layer2合约地址，以上第一步生成的ontology钱包文件wallet_ontology.dat及其密码。
+As illustrated by the above sample configuration, the `config.json` file contains access parameters to:
 
-Node的访问配置：节点地址、以上第一步生成的Layer2钱包文件wallet_layer2.dat及其密码。
-
-Mysql数据库访问配置：数据库URL、用户名和密码以及Layer2数据库名称。
+- **Ontology:** Node address, Layer2 contract address, Ontology `.dat` wallet file, and the wallet password.
+- **Node:** Node address, Layer2 `.dat` wallet file, and the wallet password.
+- **MySQL:** Database URL, username, password, and database name.
