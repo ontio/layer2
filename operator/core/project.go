@@ -114,8 +114,8 @@ func SaveDeposit(deposit *Deposit) error {
 	return dberr
 }
 
-func UpdateDeposit(txHash string, state int, layer2TxHash string) error {
-	strSql := "update deposit set layer2txhash = ?, state = ? where txhash = ?"
+func UpdateDepositByID(id uint64, state int, layer2TxHash string) error {
+	strSql := "update deposit set layer2txhash = ?, state = ? where id = ?"
 	stmt, dberr := DefDB.Prepare(strSql)
 	if stmt != nil {
 		defer stmt.Close()
@@ -123,24 +123,11 @@ func UpdateDeposit(txHash string, state int, layer2TxHash string) error {
 	if dberr != nil {
 		return dberr
 	}
-	_, dberr = stmt.Exec(layer2TxHash, state, txHash)
+	_, dberr = stmt.Exec(layer2TxHash, state, id)
 	return dberr
 }
 
-func UpdateDepositByLayer2TxHash(layer2TxHash string, state int) error {
-	strSql := "update deposit set state = ? where layer2txhash = ?"
-	stmt, dberr := DefDB.Prepare(strSql)
-	if stmt != nil {
-		defer stmt.Close()
-	}
-	if dberr != nil {
-		return dberr
-	}
-	_, dberr = stmt.Exec(state, layer2TxHash)
-	return dberr
-}
-
-func UpdateDepositById(id uint64, state int) error {
+func UpdateDepositByID2(id uint64, state int) error {
 	strSql := "update deposit set state = ? where id = ?"
 	stmt, dberr := DefDB.Prepare(strSql)
 	if stmt != nil {
@@ -360,7 +347,4 @@ func LoadLayer2Commit_Unconfirmed() []string {
 	}
 	return txHashs
 }
-
-
-
 

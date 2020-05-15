@@ -143,6 +143,13 @@ func (this *Layer2CommitMsg) Dump() string {
 	return dumpStr
 }
 
+func (this *Layer2CommitMsg) Dump1() string {
+	dumpStr := "Layer2 commit msg: "
+	dumpStr += fmt.Sprintf("layer2 state, Version: %d, Height: %d, StatesRoot: %s",
+		this.Layer2State.Version, this.Layer2State.Height, this.Layer2State.StatesRoot.ToHexString())
+	return dumpStr
+}
+
 func revertHexString(a string) string {
 	b, _ := hex.DecodeString(a)
 	c := make([]byte, 0)

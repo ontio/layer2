@@ -22,9 +22,10 @@ CREATE TABLE `deposit` (
  `fromaddress` VARCHAR(256) NOT NULL COMMENT '地址',
  `amount` BIGINT(8) NOT NULL COMMENT 'deposit的金额',
  `tokenaddress` VARCHAR(256) NOT NULL COMMENT '币地址',
- `id` INT(4) NOT NULL COMMENT '交易的高度',
+ `id` INT(4) NOT NULL COMMENT '交易的ID',
  `layer2txhash` VARCHAR(256) DEFAULT NULL COMMENT 'layer2交易hash',
- PRIMARY KEY (`txhash`)
+ PRIMARY KEY (`id`),
+ UNIQUE (`txhash`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 

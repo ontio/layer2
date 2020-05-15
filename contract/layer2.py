@@ -123,30 +123,6 @@ def deposit(player, amount, assetAddress):
     DepositEvent(currentId, player, amount, height, 0, assetAddress)
     return True
 
-
-## 用户将质押在合约中用于Layer2交易的资产赎回
-def withdraw(withdrawId):
-    withdrawStatusInfo = Get(GetContext(), concatKey(WITHDRAW_PREFIX, withdrawId))
-    assert (withdrawStatusInfo)
-    withdrawStatus = Deserialize(withdrawStatusInfo)
-    currentHeight = GetHeight()
-    confirmHeight = Get(GetContext(), CONFRIM_HEIGHT)
-    assert (currentHeight - withdrawStatusInfo[3] >= confirmHeight)
-    assetAddress = withdrawStatus[5]
-
-    assert (withdrawStatus[4] == 0)
-    if assetAddress == ONTAddress:
-        assert (_transferONTFromContact(withdrawStatus[2], withdrawStatus[1]))
-    elif assetAddress == ONGAddress:
-        assert (_transferONGFromContact(withdrawStatus[2], withdrawStatus[1]))
-    else:
-        reverseAssetAddress = bytearray_reverse(assetAddress)
-        assert (_transferOEP4FromContact(reverseAssetAddress, withdrawStatus[2], withdrawStatus[1]))
-
-    WithdrawEvent(withdrawStatus[0], withdrawStatus[1], withdrawStatus[2], withdrawStatus[3], 1, withdrawStatus[5])
-    return True
-
-
 ## 更新全局的状态根，合约需要验证签名的有效性
 def updateState(stateRootHash, height, version, depositIds, withdrawAmounts, toAddresses, assetAddresses):
     operator = Get(GetContext(), OPERATOR_ADDRESS)

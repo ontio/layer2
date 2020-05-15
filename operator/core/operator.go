@@ -28,6 +28,7 @@ import (
 	"github.com/ontio/layer2/operator/config"
 	"github.com/ontio/layer2/operator/log"
 	ontology_sdk "github.com/ontio/ontology-go-sdk"
+	ontology_sdk_common "github.com/ontio/ontology-go-sdk/common"
 	ontology_common "github.com/ontio/ontology/common"
 	"math/rand"
 	"sync"
@@ -175,7 +176,7 @@ func (this *Layer2Operator) Start() error {
 	{
 		currentHeight, err := this.ontologySdk.GetCurrentBlockHeight()
 		if err != nil {
-			fmt.Println(err)
+			log.Errorf("get ontology current block heigh err: %s", err.Error())
 		} else {
 			if this.ontologyChainInfo.Height <= 0 {
 				this.ontologyChainInfo.Height = currentHeight
@@ -197,6 +198,15 @@ func (this *Layer2Operator) Start() error {
 	 */
 	{
 		currentHeight := GetLayer2CommitHeight()
+		// check if next block commit
+		exit, _ := this.checkLayer2StateByHeight(uint64(currentHeight + 1))
+		if exit {
+			formatStr := "2006-01-02 15:04:05"
+			timehash := time.Now().Format(formatStr)
+			SaveLayer2Commit(timehash, "", uint64(currentHeight + 1))
+			UpdateLayer2Commit(timehash, uint64(currentHeight + 1), LAYER2MSG_FINISH)
+			currentHeight = currentHeight + 1
+		}
 		this.layer2ChainInfo.Height = currentHeight
 		log.Infof("layer2 current height: %d", this.layer2ChainInfo.Height)
 	}
@@ -214,18 +224,20 @@ func (this *Layer2Operator) Start() error {
 
 func (this *Layer2Operator) Stop() {
 	this.exitChan <- 1
+	this.exitChan <- 1
 	close(this.exitChan)
 	log.Infof("multi chain manager exit.")
 }
 
 func (this *Layer2Operator) MonitorOntologyChain() {
+	log.Infof("start MonitorOntologyChain")
 	updateTicker := time.NewTicker(time.Second * 1)
 	for {
 		select {
 		case <- updateTicker.C:
 			currentHeight, err := this.ontologySdk.GetCurrentBlockHeight()
 			if err != nil {
-				fmt.Println(err)
+				log.Errorf("get ontology chain current height err: %s", err.Error())
 				continue
 			}
 			log.Infof("chain %s current height: %d, parser height: %d", this.ontologyChainInfo.Name, currentHeight, this.ontologyChainInfo.Height)
@@ -236,7 +248,7 @@ func (this *Layer2Operator) MonitorOntologyChain() {
 				this.ontologyChainInfo.Height ++
 				err = this.parseOntologyChainBlock(this.ontologyChainInfo)
 				if err != nil {
-					fmt.Println(err)
+					log.Errorf("parse ontology chain block err: %s", err.Error())
 					this.ontologyChainInfo.Height --
 					break
 				}
@@ -272,7 +284,7 @@ func (this *Layer2Operator) parseOntologyChainBlock(chain *ChainInfo) error {
 			// todo
 			states := notify.States.([]interface{})
 			method, _ := hex.DecodeString(states[0].(string))
-			log.Infof("find layer2 deposit transaction: %s, method: %s", event.TxHash, string(method))
+			log.Infof("find layer2 transaction: %s, method: %s", event.TxHash, string(method))
 			if string(method) == "deposit" {
 				id, _ := hex.DecodeString(states[1].(string))
 				player := revertHexString(states[2].(string))
@@ -291,6 +303,7 @@ func (this *Layer2Operator) parseOntologyChainBlock(chain *ChainInfo) error {
 				err = SaveDeposit(deposit)
 				if err != nil {
 					log.Errorf("save deposit tx error: %v", err)
+					continue
 				}
 				//
 				this.depositChain <- deposit
@@ -344,13 +357,14 @@ func (this *Layer2Operator) parseOntologyChainBlock(chain *ChainInfo) error {
 }
 
 func (this *Layer2Operator) depositLoop() {
+	log.Infof("start depositLoop")
 	for {
 		select {
 		case deposit := <-this.depositChain:
 			for true {
 				err := this.commitDeposit2Layer2(deposit)
 				if err != nil {
-					log.Errorf("commit deposit 2 alyer2 error: %s", err.Error())
+					log.Errorf("commit deposit 2 layer2 error: %s", err.Error())
 					time.Sleep(time.Second * 1)
 				} else {
 					break
@@ -394,19 +408,20 @@ func (this *Layer2Operator) commitDeposit2Layer2(deposit *Deposit) error {
 		}
 	}
 	deposit.State = DEPOSIT_COMMIT
-	UpdateDeposit(deposit.TxHash, deposit.State, hash.ToHexString())
+	UpdateDepositByID(deposit.ID, deposit.State, hash.ToHexString())
 	log.Infof("commit deposit to layer2, from : %s, to : %s, tx hash: %s", layer2_common.ADDRESS_EMPTY.ToBase58(), toAddr.ToBase58(), hash.ToHexString())
 	return nil
 }
 
 func (this *Layer2Operator) MonitorLayer2Chain() {
+	log.Infof("start MonitorLayer2Chain")
 	updateTicker := time.NewTicker(time.Second * 1)
 	for {
 		select {
 		case <- updateTicker.C:
 			currentHeight, err := this.layer2Sdk.GetCurrentBlockHeight()
 			if err != nil {
-				fmt.Println(err)
+				log.Errorf("get layer2 current block height err: %s", err.Error())
 				continue
 			}
 
@@ -425,7 +440,7 @@ func (this *Layer2Operator) MonitorLayer2Chain() {
 				this.layer2ChainInfo.Height ++
 				err = this.parseLayer2ChainBlock(this.layer2ChainInfo)
 				if err != nil {
-					fmt.Println(err)
+					log.Errorf("parser layer2 chain block err: %s", err.Error())
 					this.layer2ChainInfo.Height --
 					break
 				}
@@ -452,6 +467,12 @@ func (this *Layer2Operator) parseLayer2ChainBlock(chain *ChainInfo) error {
 		return err
 	}
 	msg := &Layer2CommitMsg{}
+	insertLayer2TxBatch := NewMysqlInsertBatch(DefDB, 9, "(?,?,?,?,?,?,?,?,?)", "insert into layer2tx(txhash, tt, state, fee, height, fromaddress, tokenaddress, toaddress, amount)")
+	insertLayer2TxArgs := make([]interface{}, 9)
+	updateDepositBatch := NewMysqlUpdateBatch(DefDB, 9, "(?,?,?,?,?,?,?,?,?)", "insert into deposit(txhash, tt, state, height, fromaddress, amount, tokenaddress, id, layer2txhash)", "ON DUPLICATE KEY UPDATE state=VALUES(state)")
+	updateDepositArgs := make([]interface{}, 9)
+	insertWithdrawBatch := NewMysqlInsertBatch(DefDB, 7, "(?,?,?,?,?,?,?)", "insert into withdraw(txhash, tt, state, height, toaddress, amount, tokenaddress)")
+	insertWithdrawArgs := make([]interface{}, 7)
 	log.Infof("chain: %s, block height: %d, events num: %d\n", chain.Name, chain.Height, len(events))
 	for _, event := range events {
 		log.Infof("tx hash: %s, state:%d, gas: %d\n", event.TxHash, event.State, event.GasConsumed)
@@ -489,16 +510,38 @@ func (this *Layer2Operator) parseLayer2ChainBlock(chain *ChainInfo) error {
 			layer2Tx.Amount = transferAmount
 			layer2Tx.TokenAddress = revertHexString(notify.ContractAddress)
 			layer2Tx.ToAddress = transferTo
+			insertLayer2TxArgs[0] = layer2Tx.TxHash
+			insertLayer2TxArgs[1] = layer2Tx.TT
+			insertLayer2TxArgs[2] = layer2Tx.State
+			insertLayer2TxArgs[3] = layer2Tx.Fee
+			insertLayer2TxArgs[4] = layer2Tx.Height
+			insertLayer2TxArgs[5] = layer2Tx.FromAddress
+			insertLayer2TxArgs[6] = layer2Tx.TokenAddress
+			insertLayer2TxArgs[7] = layer2Tx.ToAddress
+			insertLayer2TxArgs[8] = layer2Tx.Amount
+			insertLayer2TxBatch.Insert(insertLayer2TxArgs)
+			/*
 			err = SaveLayer2Tx(layer2Tx)
 			if err != nil {
 				log.Errorf("save layer2 tx error: %v", err)
 			}
+			*/
 
 			//
 			if isLayer2Tx(layer2Tx.FromAddress) {
-				UpdateDepositByLayer2TxHash(layer2Tx.TxHash, DEPOSIT_FINISH)
+				//UpdateDepositByLayer2TxHash(layer2Tx.TxHash, DEPOSIT_FINISH)
 				deposit := LoadDepositByLayer2TxHash(layer2Tx.TxHash)
 				msg.Deposits = append(msg.Deposits, deposit.ID)
+				updateDepositArgs[0] = ""
+				updateDepositArgs[1] = 0
+				updateDepositArgs[2] = DEPOSIT_FINISH
+				updateDepositArgs[3] = 0
+				updateDepositArgs[4] = ""
+				updateDepositArgs[5] = 0
+				updateDepositArgs[6] = ""
+				updateDepositArgs[7] = deposit.ID
+				updateDepositArgs[8] = ""
+				updateDepositBatch.Insert(updateDepositArgs)
 			}
 
 			if isLayer2Tx(layer2Tx.ToAddress) {
@@ -510,14 +553,28 @@ func (this *Layer2Operator) parseLayer2ChainBlock(chain *ChainInfo) error {
 				withdraw.ToAddress = transferFrom
 				withdraw.Amount = transferAmount
 				withdraw.TokenAddress = revertHexString(notify.ContractAddress)
+				insertWithdrawArgs[0] = withdraw.TxHash
+				insertWithdrawArgs[1] = withdraw.TT
+				insertWithdrawArgs[2] = withdraw.State
+				insertWithdrawArgs[3] = withdraw.Height
+				insertWithdrawArgs[4] = withdraw.ToAddress
+				insertWithdrawArgs[5] = withdraw.Amount
+				insertWithdrawArgs[6] = withdraw.TokenAddress
+				insertWithdrawBatch.Insert(insertWithdrawArgs)
+				/*
 				err = SaveWithdraw(withdraw)
 				if err != nil {
 					log.Errorf("save withdraw tx error: %v", err)
 				}
+				*/
 				msg.WithDraws = append(msg.WithDraws, withdraw)
 			}
 		}
 	}
+
+	insertLayer2TxBatch.Close()
+	updateDepositBatch.Close()
+	insertWithdrawBatch.Close()
 
 	//
 	layer2State, _, _ := this.layer2Sdk.GetLayer2State(chain.Height)
@@ -528,6 +585,7 @@ func (this *Layer2Operator) parseLayer2ChainBlock(chain *ChainInfo) error {
 }
 
 func (this *Layer2Operator) commitMsgLoop() {
+	log.Infof("start commitMsgLoop")
 	for {
 		select {
 		case msg := <-this.msgChan:
@@ -563,13 +621,15 @@ func (this *Layer2Operator) commitLayer2State2Ontology(msg *Layer2CommitMsg) err
 		tokenAddress, _ := hex.DecodeString(withdraw.TokenAddress)
 		assetAddress = append(assetAddress, tokenAddress)
 	}
-	result, err := this.ontologySdk.NeoVM.PreExecInvokeNeoVMContract(contractAddress, []interface{}{"updateState", []interface{}{
+	result, err := this.PreExecInvokeNeoVMContract(contractAddress, []interface{}{"updateState", []interface{}{
 		msg.Layer2State.StatesRoot.ToHexString(), msg.Layer2State.Height, string(msg.Layer2State.Version),
 		depositids, withdrawAmounts,toAddresses,assetAddress}})
+	var gasLimit uint64
 	if err != nil {
-		return fmt.Errorf("pre exec layer2 state commit error! err: %s", err.Error())
+		gasLimit = 6000000
+	} else {
+		gasLimit = result.Gas
 	}
-	gasLimit := result.Gas
 	tx, err := this.ontologySdk.NeoVM.NewNeoVMInvokeTransaction(500, gasLimit, contractAddress, []interface{}{"updateState", []interface{}{
 		msg.Layer2State.StatesRoot.ToHexString(), msg.Layer2State.Height, string(msg.Layer2State.Version),
 		depositids, withdrawAmounts,toAddresses,assetAddress}})
@@ -596,16 +656,17 @@ func (this *Layer2Operator) commitLayer2State2Ontology(msg *Layer2CommitMsg) err
 
 	//
 	for _, id := range msg.Deposits {
-		UpdateDepositById(id, DEPOSIT_NOTIFY)
+		UpdateDepositByID2(id, DEPOSIT_NOTIFY)
 	}
 	for _, withdraw := range msg.WithDraws {
 		UpdateWithdraw(withdraw.TxHash, WITHDRAW_COMMIT, txHash.ToHexString())
 	}
-	SaveLayer2Commit(txHash.ToHexString(), layer2Msg, uint64(msg.Layer2State.Height))
+	SaveLayer2Commit(txHash.ToHexString(), msg.Dump1(), uint64(msg.Layer2State.Height))
 	return nil
 }
 
 func (this *Layer2Operator) checkMsgLoop() {
+	log.Infof("start checkMsgLoop")
 	for true {
 		this.checkLayer2State()
 		time.Sleep(time.Second * 1)
@@ -683,6 +744,44 @@ func (this *Layer2Operator) checkLayer2State() {
 			time.Sleep(time.Second * 1)
 		}
 	}
+}
+
+func (this *Layer2Operator) checkLayer2StateByHeight(height uint64) (bool, error) {
+	contractAddress, _ := ontology_common.AddressFromHexString(this.config.OntologyConfig.Layer2ContractAddress)
+	tx, err := this.ontologySdk.NeoVM.NewNeoVMInvokeTransaction(0, 0, contractAddress, []interface{}{"getStateRootByHeight", []interface{}{height}})
+	if err != nil {
+		return false, fmt.Errorf("new transaction failed!")
+	}
+	result, err := this.ontologySdk.PreExecTransaction(tx)
+	if err != nil {
+		return false, nil
+	}
+	if result == nil || result.Result == nil {
+		return false, nil
+	}
+	data, _ := result.Result.ToArray()
+	if len(data) != 3 {
+		return false, nil
+	}
+	item1,_ := data[1].ToInteger()
+	if item1.Uint64() != height {
+		return false, nil
+	} else {
+		return true, nil
+	}
+}
+
+func (this *Layer2Operator) PreExecInvokeNeoVMContract(contractAddress ontology_common.Address, params []interface{}) (*ontology_sdk_common.PreExecResult, error) {
+	tx, err := this.ontologySdk.NeoVM.NewNeoVMInvokeTransaction(0, 0, contractAddress, params)
+	if err != nil {
+		return nil, err
+	}
+	this.ontologySdk.SetPayer(tx, this.ontologyAccount.Address)
+	err = this.ontologySdk.SignToTransaction(tx, this.ontologyAccount)
+	if err != nil {
+		return nil, fmt.Errorf("sign layer2 state commit transaction failed! err: %s", err.Error())
+	}
+	return this.ontologySdk.PreExecTransaction(tx)
 }
 
 func isLayer2Tx(addr string) bool {

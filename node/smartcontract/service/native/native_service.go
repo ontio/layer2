@@ -21,10 +21,9 @@ package native
 import (
 	"encoding/hex"
 	"fmt"
-	"github.com/ontio/ontology-crypto/keypair"
 	"github.com/ontio/layer2/node/common/config"
-	"github.com/ontio/layer2/node/common/log"
 	"github.com/ontio/layer2/node/merkle"
+	"github.com/ontio/ontology-crypto/keypair"
 
 	"github.com/ontio/layer2/node/common"
 	"github.com/ontio/layer2/node/core/types"
@@ -75,7 +74,7 @@ func (this *NativeService) Invoke() ([]byte, error) {
 	operatorPublicKey,_ := keypair.DeserializePublicKey(operatorPublicKeyBytes)
 	operatorAddress := types.AddressFromPubKey(operatorPublicKey)
 	player := this.Tx.Payer.ToBase58()
-	log.Infof("player: %s, operator: %s", player, operatorAddress.ToBase58())
+	//log.Infof("player: %s, operator: %s", player, operatorAddress.ToBase58())
 	if player == operatorAddress.ToBase58() {
 		this.Operator = true
 	}
