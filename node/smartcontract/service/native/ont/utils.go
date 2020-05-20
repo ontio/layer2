@@ -145,7 +145,7 @@ func TransferedFrom(native *native.NativeService, currentContract common.Address
 }
 
 func IsLayer2Addr(addr common.Address) bool {
-	if addr[0] == 0 &&  addr[1] == 0 &&  addr[2] == 0 &&  addr[3] == 0 {
+	if addr.ToHexString() == common.ADDRESS_EMPTY.ToHexString() {
 		return true
 	} else {
 		return false
