@@ -5,6 +5,9 @@ import store from './store'
 import VueI18n from 'vue-i18n'
 Vue.use(VueI18n)
 
+// import { vDebounceThrottle } from 'directives'
+// Vue.use(vDebounceThrottle)
+
 const i18n = new VueI18n({
   locale: "en", // 定义默认语言为中文
   messages: {
