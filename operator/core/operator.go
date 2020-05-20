@@ -50,6 +50,7 @@ type Layer2Operator struct {
 	msgChan             chan *Layer2CommitMsg
 	exitChan            chan int
 	mu                  sync.Mutex
+	needCheck           bool
 
 	// use for test
 	fortest              int
@@ -70,6 +71,7 @@ func NewLayer2Operator(servCfg *config.ServiceConfig) (*Layer2Operator, error) {
 		config:             servCfg,
 		ontologySdk:        ontologySdk,
 		layer2Sdk:          layer2Sdk,
+		needCheck:          false,
 		fortest:            0,
 		deposit:            0,
 		withdraw:           0,
@@ -436,7 +438,13 @@ func (this *Layer2Operator) MonitorLayer2Chain() {
 				if commitHeight < this.layer2ChainInfo.Height {
 					break
 				}
-
+				if this.needCheck {
+					this.needCheck = false
+					exit, _ := this.checkLayer2StateByHeight(uint64(this.layer2ChainInfo.Height + 1))
+					if exit {
+						this.layer2ChainInfo.Height ++
+					}
+				}
 				this.layer2ChainInfo.Height ++
 				err = this.parseLayer2ChainBlock(this.layer2ChainInfo)
 				if err != nil {
@@ -690,6 +698,7 @@ func (this *Layer2Operator) checkLayer2State() {
 				txConfirmed[i] = 0
 				this.mu.Lock()
 				this.layer2ChainInfo.Height --
+				this.needCheck = true
 				this.mu.Unlock()
 				continue
 			}
@@ -711,25 +720,43 @@ func (this *Layer2Operator) checkLayer2State() {
 				txConfirmed[i] --
 				continue
 			}
+			if event.State == 1 {
+				UpdateLayer2Commit(event.TxHash, uint64(heigth), LAYER2MSG_FINISH)
+				log.Infof("layer2 commit: %s is finished.", txHash)
+			} else {
+				UpdateLayer2Commit(event.TxHash, uint64(heigth), LAYER2MSG_FAILED)
+				log.Infof("layer2 commit: %s is failed.", txHash)
+				this.mu.Lock()
+				this.layer2ChainInfo.Height --
+				this.needCheck = true
+				this.mu.Unlock()
+			}
+			txConfirmed[i] = 0
+			/*
 			for _, notify := range event.Notify {
 				states := notify.States.([]interface{})
 				method, _ := hex.DecodeString(states[0].(string))
 				if string(method) == "updateDepositState" {
-
 				} else if string(method) == "withdraw" {
 
 				} else if string(method) == "updateState" {
-					commitState := LAYER2MSG_COMMIT
 					if event.State == 1 {
-						commitState = LAYER2MSG_FINISH
+						UpdateLayer2Commit(event.TxHash, uint64(heigth), LAYER2MSG_FINISH)
+						log.Infof("layer2 commit: %s is finished.", txHash)
+					} else {
+						UpdateLayer2Commit(event.TxHash, uint64(heigth), LAYER2MSG_FAILED)
+						log.Infof("layer2 commit: %s is failed.", txHash)
+						this.mu.Lock()
+						this.layer2ChainInfo.Height --
+						this.needCheck = true
+						this.mu.Unlock()
 					}
-					UpdateLayer2Commit(event.TxHash, uint64(heigth), commitState)
-					log.Infof("layer2 commit: %s is finished.", txHash)
 					txConfirmed[i] = 0
 				} else {
 
 				}
-			}
+
+			}*/
 		}
 		allConfired := true
 		for _, confirmed := range txConfirmed {
@@ -786,7 +813,7 @@ func (this *Layer2Operator) PreExecInvokeNeoVMContract(contractAddress ontology_
 
 func isLayer2Tx(addr string) bool {
 	newAddr,_ := layer2_common.AddressFromBase58(addr)
-	if newAddr == layer2_common.ADDRESS_EMPTY {
+	if newAddr.ToHexString() == layer2_common.ADDRESS_EMPTY.ToHexString() {
 		return true
 	} else {
 		return false
