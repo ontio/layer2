@@ -229,6 +229,7 @@
 <script>
 import VueQrcode from "vue-qrcode";
 import { mapState } from "vuex";
+import _ from 'lodash'
 // import {Crypto, RpcClient} from 'ontology-ts-sdk'
 export default {
 	name: "Home",
@@ -380,45 +381,50 @@ export default {
 				this.convertForm.to = "ONG";
 			}
 		},
-		onSendSubmit() {
-            this.requesting = true
-            this.$store.dispatch('sendToken', {...this.sendForm}).then(res => {
-                this.sendVisible = false
-                this.requesting = false
-                if(res.Error === 0) {
-                    this.$message.success(this.$t('home.transactionSuccess'))    
-                } else {
-                    this.$message.error(res.message || this.$t('home.transactionerror'))    
+		onSendSubmit: 
+            _.debounce(function(){
+                 this.requesting = true
+                this.$store.dispatch('sendToken', {...this.sendForm}).then(res => {
+                    this.sendVisible = false
+                    this.requesting = false
+                    if(res.Error === 0) {
+                        this.$message.success(this.$t('home.transactionSuccess'))    
+                    } else {
+                        this.$message.error(res.message || this.$t('home.transactionFail'))    
+                    }
+                })
+            }, 200)
+        ,
+        onConvertSubmit:
+            _.debounce(function() {
+                if(this.requesting) return;
+                console.log('clicked')
+                let {from, to ,amount} = this.convertForm
+                if(from === 'ONT' || from === 'ONG') {
+                    this.requesting = true
+                    const res = this.$store.dispatch('deposit', {amount, asset: from}).then(res => {
+                        this.convertVisible = false;
+                        this.requesting = false
+                        if(res.Error === 0) {
+                            this.$message.success(this.$t('home.transactionSuccess'))    
+                        } else {
+                            this.$message.error(res.message || this.$t('home.transactionFail'))    
+                        }
+                    })
+                } else if(from === 'XONT' || from === 'XONG') {
+                    this.requesting = true
+                    
+                    const res = this.$store.dispatch('withdraw', {amount, asset:from}).then(res => {
+                        this.convertVisible = false;
+                        this.requesting = false
+                        if(res.Error === 0) {
+                            this.$message.success(this.$t('home.transactionSuccess'))    
+                        } else {
+                            this.$message.error(res.message || this.$t('home.transactionFail'))    
+                        }
+                    })
                 }
-            })
-        },
-        onConvertSubmit() {
-            let {from, to ,amount} = this.convertForm
-            if(from === 'ONT' || from === 'ONG') {
-                this.requesting = true
-                this.$store.dispatch('deposit', {amount, asset: from}).then(res => {
-                this.convertVisible = false;
-                this.requesting = false
-                if(res.Error === 0) {
-                    this.$message.success(this.$t('home.transactionSuccess'))    
-                } else {
-                    this.$message.error(res.message || this.$t('home.transactionerror'))    
-                }
-            })
-            } else if(from === 'XONT' || from === 'XONG') {
-                this.requesting = true
-                
-                this.$store.dispatch('withdraw', {amount, asset:from}).then(res => {
-                this.convertVisible = false;
-                this.requesting = false
-                if(res.Error === 0) {
-                    this.$message.success(this.$t('home.transactionSuccess'))    
-                } else {
-                    this.$message.error(res.message || this.$t('home.transactionerror'))    
-                }
-            })
-            }
-        },
+            }, 200),
         
 	    readWalletFile($file, readerType) {
 			return new Promise(function(resolve, reject) {
