@@ -398,7 +398,6 @@ export default {
         onConvertSubmit:
             _.debounce(function() {
                 if(this.requesting) return;
-                console.log('clicked')
                 let {from, to ,amount} = this.convertForm
                 if(from === 'ONT' || from === 'ONG') {
                     this.requesting = true
