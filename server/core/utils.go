@@ -67,7 +67,7 @@ type Deposit struct {
 	FromAddress     string
 	Amount          uint64
 	TokenAddress    string
-	ID              uint32
+	ID              uint64
 	Layer2TxHash    string
 }
 
