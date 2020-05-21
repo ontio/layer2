@@ -91,7 +91,7 @@ export default new Vuex.Store({
                 const { ont, ong } = balance_offchain.result
                 commit('UPDATE_OFFCHAIN_BALANCE', { ont, ong })
             }
-            const rpcClient = new RpcClient()
+            const rpcClient = new RpcClient('http://' + process.env.VUE_APP_ONTOLOGY_NETWORK + ':20336')
             const balance_onchain = await rpcClient.getBalance(addr)
             console.log(balance_onchain)
             if (balance_onchain.error === 0) {
@@ -123,7 +123,7 @@ export default new Vuex.Store({
                 const tx = TransactionBuilder.makeInvokeTransaction(method, params, contractAddr, '500', '200000', payer);
                 const privateKey = new Crypto.PrivateKey(state.privateKey)
                 TransactionBuilder.signTransaction(tx, privateKey);
-                const socketClient = new WebsocketClient()
+                const socketClient = new WebsocketClient('ws://' + process.env.VUE_APP_ONTOLOGY_NETWORK + ':20335')
 
                 const res = await socketClient.sendRawTransaction(tx.serialize(), false, true);
                 console.log(JSON.stringify(res));
@@ -192,7 +192,7 @@ export default new Vuex.Store({
                     const tx = OntAssetTxBuilder.makeTransferTx(assetV, payer, receiver, amountV, '500', '200000', payer);
                     const privateKey = new Crypto.PrivateKey(state.privateKey)
                     TransactionBuilder.signTransaction(tx, privateKey);
-                    const socketClient = new WebsocketClient()
+                    const socketClient = new WebsocketClient('ws://' + process.env.VUE_APP_ONTOLOGY_NETWORK + ':20335')
                     const response = await socketClient.sendRawTransaction(tx.serialize(), false, true);
                     // tslint:disable:no-console
                     console.log(JSON.stringify(response));
