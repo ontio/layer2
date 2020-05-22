@@ -31,11 +31,18 @@
     "send": {
         "amount": "Amount",
         "token": "Token",
-        "to": "To"
+        "to": "To",
+        "minOngAmount": "The minimum amount of ONG is 0.1",
+        "tokenRequired": "Please enter token",
+        "toRequired": "Please enter receiver's address",
+        "amountRequired": "Please enter amount"
     },
     "convert": {
         "from": "From",
         "to": "To",
-        "amount": "Amount"
+        "amount": "Amount",
+        "fromRequired": "Please enter the token before conversion",
+        "toRequired": "Please enter the token after conversion",
+        "amountRequired": "Please enter the amount"
     }
 }
