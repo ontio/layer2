@@ -399,19 +399,32 @@ func (this *Layer2Operator) commitDeposit2Layer2(deposit *Deposit) error {
 		return err
 	}
 	var hash layer2_common.Uint256
+	counter := 0
 	for true {
 		hash, err = this.layer2Sdk.SendTransaction(tx)
 		if err != nil {
 			log.Errorf("send transaction err when commit deposit 2 layer2, err: %s, try again......", err.Error())
+			if counter == 100 {
+				break
+			}
 			time.Sleep(time.Second * 1)
+			counter ++
 			// send error, we cannot send again, so ignore this error
 		} else {
 			break
 		}
 	}
-	deposit.State = DEPOSIT_COMMIT
-	UpdateDepositByID(deposit.ID, deposit.State, hash.ToHexString())
-	log.Infof("commit deposit to layer2, from : %s, to : %s, tx hash: %s", layer2_common.ADDRESS_EMPTY.ToBase58(), toAddr.ToBase58(), hash.ToHexString())
+	if counter == 100 {
+		deposit.State = DEPOSIT_FAILED
+		formatStr := "2006-01-02 15:04:05"
+		timehash := time.Now().Format(formatStr)
+		UpdateDepositByID(deposit.ID, deposit.State, timehash)
+		log.Infof("commit deposit to layer2, from : %s, to : %s, failed: %s", layer2_common.ADDRESS_EMPTY.ToBase58(), toAddr.ToBase58(), timehash)
+	} else {
+		deposit.State = DEPOSIT_COMMIT
+		UpdateDepositByID(deposit.ID, deposit.State, hash.ToHexString())
+		log.Infof("commit deposit to layer2, from : %s, to : %s, tx hash: %s", layer2_common.ADDRESS_EMPTY.ToBase58(), toAddr.ToBase58(), hash.ToHexString())
+	}
 	return nil
 }
 
