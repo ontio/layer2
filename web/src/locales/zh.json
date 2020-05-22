@@ -31,11 +31,18 @@
     "send": {
         "amount": "金额",
         "token": "选择代币",
-        "to": "接收方"
+        "to": "接收方",
+        "minOngAmount": "最小ONG金额为0.1",
+        "tokenRequired": "请输入token",
+        "toRequired": "请输入收款者地址",
+        "amountRequired": "请输入金额"
     },
     "convert": {
         "from": "转换前",
         "to": "转换后",
-        "amount": "金额"
+        "amount": "金额",
+        "fromRequired": "请输入转换前的token",
+        "toRequired": "请输入转换后的token",
+        "amountRequired": "请输入金额"
     }
 }

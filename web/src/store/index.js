@@ -53,7 +53,8 @@ export default new Vuex.Store({
         contract_address: process.env.VUE_APP_CONTRACT_HASH,
         address: address,
         privateKey: privateKey,
-        requesting: false
+        requesting: false,
+        isTestnet: process.env.VUE_APP_ENV === 'production' ? false : true
     },
     mutations: {
         UPDATE_OFFCHAIN_BALANCE(state, { ont, ong }) {
@@ -91,7 +92,9 @@ export default new Vuex.Store({
                 const { ont, ong } = balance_offchain.result
                 commit('UPDATE_OFFCHAIN_BALANCE', { ont, ong })
             }
-            const rpcClient = new RpcClient('http://' + process.env.VUE_APP_ONTOLOGY_NETWORK + ':20336')
+            const schema = process.env.VUE_APP_ENV === 'production' ? 'https://' : 'http://';
+            const port = process.env.VUE_APP_ENV === 'production' ? ':10336' : ':20336';
+            const rpcClient = new RpcClient(schema + process.env.VUE_APP_ONTOLOGY_NETWORK + port)
             const balance_onchain = await rpcClient.getBalance(addr)
             console.log(balance_onchain)
             if (balance_onchain.error === 0) {
@@ -123,7 +126,9 @@ export default new Vuex.Store({
                 const tx = TransactionBuilder.makeInvokeTransaction(method, params, contractAddr, '500', '200000', payer);
                 const privateKey = new Crypto.PrivateKey(state.privateKey)
                 TransactionBuilder.signTransaction(tx, privateKey);
-                const socketClient = new WebsocketClient('ws://' + process.env.VUE_APP_ONTOLOGY_NETWORK + ':20335')
+                const schema = process.env.VUE_APP_ENV === 'production' ? 'wss://' : 'ws://';
+                const port = process.env.VUE_APP_ENV === 'production' ? ':10335' : ':20335';
+                const socketClient = new WebsocketClient(schema + process.env.VUE_APP_ONTOLOGY_NETWORK + port)
 
                 const res = await socketClient.sendRawTransaction(tx.serialize(), false, true);
                 console.log(JSON.stringify(res));
@@ -151,9 +156,9 @@ export default new Vuex.Store({
                 tx.isLayer2Node = true
                 const privateKey = new Crypto.PrivateKey(state.privateKey)
                 TransactionBuilder.signTransaction(tx, privateKey);
-                const socketClient = new WebsocketClient(state.layer2_socket)
+                const client = new RpcClient(state.layer2_rpc)
 
-                const response = await socketClient.sendRawTransaction(tx.serialize(), false, true);
+                const response = await client.sendRawTransaction(tx.serialize(), false);
                 // tslint:disable:no-console
                 console.log(JSON.stringify(response));
                 dispatch('getBalance', state.address)
@@ -181,8 +186,9 @@ export default new Vuex.Store({
                     tx.isLayer2Node = true;
                     const privateKey = new Crypto.PrivateKey(state.privateKey)
                     TransactionBuilder.signTransaction(tx, privateKey);
-                    const socketClient = new WebsocketClient(state.layer2_socket)
-                    const response = await socketClient.sendRawTransaction(tx.serialize(), false, true);
+                    const client = new RpcClient(state.layer2_rpc)
+
+                    const response = await client.sendRawTransaction(tx.serialize(), false);
                     // tslint:disable:no-console
                     console.log(JSON.stringify(response));
                     dispatch('getBalance', state.address)
@@ -192,7 +198,9 @@ export default new Vuex.Store({
                     const tx = OntAssetTxBuilder.makeTransferTx(assetV, payer, receiver, amountV, '500', '200000', payer);
                     const privateKey = new Crypto.PrivateKey(state.privateKey)
                     TransactionBuilder.signTransaction(tx, privateKey);
-                    const socketClient = new WebsocketClient('ws://' + process.env.VUE_APP_ONTOLOGY_NETWORK + ':20335')
+                    const schema = process.env.VUE_APP_ENV === 'production' ? 'wss://' : 'ws://';
+                    const port = process.env.VUE_APP_ENV === 'production' ? ':10335' : ':20335';
+                    const socketClient = new WebsocketClient(schema + process.env.VUE_APP_ONTOLOGY_NETWORK + port)
                     const response = await socketClient.sendRawTransaction(tx.serialize(), false, true);
                     // tslint:disable:no-console
                     console.log(JSON.stringify(response));
