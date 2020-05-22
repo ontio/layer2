@@ -114,7 +114,7 @@
 			</div>
 		</div>
 
-        <div class="footer">
+        <div class="footer" v-if="isTestnet">
             <p class="network">{{$t('home.currentNetwork')}}：Testnet</p>
             <a href="https://developer.ont.io/" target="_blank">{{$t('home.getTestCoins')}}</a>
         </div>
@@ -157,9 +157,9 @@
 		</el-dialog>
 		<el-dialog :title="$t('home.sendTokens')"
 			:visible.sync="sendVisible">
-			<el-form label-width="80px"
-				:model="sendForm">
-				<el-form-item :label="$t('send.token')">
+			<el-form label-width="80px" ref="sendForm"
+				:model="sendForm" :rules="sendRules">
+				<el-form-item :label="$t('send.token')" prop="token">
 					<el-select v-model="sendForm.token"
 						style="float: left;">
 						<el-option label="ONT"
@@ -173,11 +173,11 @@
 
 					</el-select>
 				</el-form-item>
-				<el-form-item :label="$t('send.to')">
+				<el-form-item :label="$t('send.to')" prop="to">
 					<el-input v-model="sendForm.to"></el-input>
 				</el-form-item>
-				<el-form-item :label="$t('send.amount')">
-					<el-input type="number"
+				<el-form-item :label="$t('send.amount')" prop="amount">
+					<el-input type="number" 
 						v-model="sendForm.amount"></el-input>
 				</el-form-item>
 			</el-form>
@@ -190,9 +190,9 @@
 		</el-dialog>
 		<el-dialog :title="$t('home.convertTokens')" 
 			:visible.sync="convertVisible">
-			<el-form label-width="80px"  
-				:form="convertForm">
-				<el-form-item :label="$t('convert.from')">
+			<el-form label-width="80px"  ref="convertForm"
+				:model="convertForm" :rules="convertRules">
+				<el-form-item :label="$t('convert.from')" prop="from">
 					<el-select v-model="convertForm.from"
 						style="float: left;"
 						@change="onSelectConvertFrom">
@@ -207,11 +207,11 @@
 
 					</el-select>
 				</el-form-item>
-				<el-form-item :label="$t('convert.to')">
+				<el-form-item :label="$t('convert.to')" prop="to">
 					<el-input v-model="convertForm.to"
 						disabled></el-input>
 				</el-form-item>
-				<el-form-item :label="$t('convert.amount')">
+				<el-form-item :label="$t('convert.amount')" prop="amount">
 					<el-input type="number"
 						v-model="convertForm.amount"></el-input>
 				</el-form-item>
@@ -237,6 +237,7 @@ export default {
 		VueQrcode
 	},
 	data() {
+        const that = this;
 		return {
             lang: 'en',
             onchainActiveIndex: -1,
@@ -247,7 +248,7 @@ export default {
 			sendForm: {
 				token: "ONT",
 				to: "",
-				amount: ""
+                amount: ""
 			},
 			convertForm: {
 				from: "ONT",
@@ -258,9 +259,30 @@ export default {
 			password: "",
             walletJson: '',
             selectWallet: false,
-            layer2_rpc: 'http://172.168.3.59:40336',
             fileName: '',
-            requesting: false
+            requesting: false,
+            sendRules: {
+                token: [
+                    {required: true, message: this.$t('send.tokenRequired'), trigger: 'blur'},
+                ],
+                to: [
+                    {required: true, message: this.$t('send.toRequired'), trigger: 'blur'},
+                ],
+                amount: [
+                    {required: true, message: this.$t('send.amountRequired'), trigger: 'blur'},
+                ]
+            },
+            convertRules: {
+                from: [
+                    {required: true, message: this.$t('convert.fromRequired'), trigger: 'blur'},
+                ],
+                to: [
+                    {required: true, message: this.$t('convert.toRequired'), trigger: 'blur'},
+                ],
+                amount: [
+                    {required: true, message: this.$t('convert.amountRequired'), trigger: 'blur'}
+                ]
+            }
 		};
     },
     mounted() {
@@ -277,7 +299,8 @@ export default {
             onchain_tokens: state => state.onchain_tokens,
             offchain_tokens: state => state.offchain_tokens,
             address: state => state.address,
-            privateKey: state => state.privateKey
+            privateKey: state => state.privateKey,
+            isTestnet: state => state.isTestnet
 		})
 	},
 	methods: {
@@ -382,46 +405,65 @@ export default {
 			}
 		},
 		onSendSubmit: 
-            _.debounce(function(){
+            _.debounce(async function(){
+                const valid = await this.$refs["sendForm"].validate();
+                if(!valid) return;
+                if(this.sendForm.token === 'XONG' || this.sendForm.token === 'ONG') {
+                    if(Number(this.sendForm.amount) < 0.1) {
+                        this.$message({
+                            type: 'warning',
+                            message: this.$t('send.minOngAmount')
+                        })
+                        this.requesting = false;
+                        return;
+                    }
+                }
                  this.requesting = true
-                this.$store.dispatch('sendToken', {...this.sendForm}).then(res => {
+                const res = await this.$store.dispatch('sendToken', {...this.sendForm})
                     this.sendVisible = false
                     this.requesting = false
-                    if(res.Error === 0) {
+                    if(res.error === 0 || res.Error === 0) {
                         this.$message.success(this.$t('home.transactionSuccess'))    
                     } else {
                         this.$message.error(res.message || this.$t('home.transactionFail'))    
                     }
-                })
             }, 200)
         ,
         onConvertSubmit:
-            _.debounce(function() {
-                if(this.requesting) return;
+            _.debounce(async function() {
+                const valid = await this.$refs["convertForm"].validate();
+                if(!valid) return;
+                if(this.convertForm.from === 'XONG' || this.convertForm.from === 'ONG') {
+                    if(Number(this.convertForm.amount) < 0.1) {
+                        this.$message({
+                            type: 'warning',
+                            message: this.$t('send.minOngAmount')
+                        })
+                        this.requesting = false;
+                        return;
+                    }
+                } 
                 let {from, to ,amount} = this.convertForm
                 if(from === 'ONT' || from === 'ONG') {
                     this.requesting = true
-                    const res = this.$store.dispatch('deposit', {amount, asset: from}).then(res => {
+                    const res = await this.$store.dispatch('deposit', {amount, asset: from})
                         this.convertVisible = false;
                         this.requesting = false
-                        if(res.Error === 0) {
+                        if(res.error === 0 || res.Error === 0) {
                             this.$message.success(this.$t('home.transactionSuccess'))    
                         } else {
                             this.$message.error(res.message || this.$t('home.transactionFail'))    
                         }
-                    })
                 } else if(from === 'XONT' || from === 'XONG') {
                     this.requesting = true
-                    
-                    const res = this.$store.dispatch('withdraw', {amount, asset:from}).then(res => {
+                    const res = await this.$store.dispatch('withdraw', {amount, asset:from})
                         this.convertVisible = false;
                         this.requesting = false
-                        if(res.Error === 0) {
+                        if(res.error === 0 || res.Error === 0) {
                             this.$message.success(this.$t('home.transactionSuccess'))    
                         } else {
                             this.$message.error(res.message || this.$t('home.transactionFail'))    
                         }
-                    })
                 }
             }, 200),
         
