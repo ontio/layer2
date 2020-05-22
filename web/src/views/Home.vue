@@ -422,7 +422,7 @@ export default {
                 const res = await this.$store.dispatch('sendToken', {...this.sendForm})
                     this.sendVisible = false
                     this.requesting = false
-                    if(res.Error === 0) {
+                    if(res.error === 0 || res.Error === 0) {
                         this.$message.success(this.$t('home.transactionSuccess'))    
                     } else {
                         this.$message.error(res.message || this.$t('home.transactionFail'))    
@@ -449,7 +449,7 @@ export default {
                     const res = await this.$store.dispatch('deposit', {amount, asset: from})
                         this.convertVisible = false;
                         this.requesting = false
-                        if(res.Error === 0) {
+                        if(res.error === 0 || res.Error === 0) {
                             this.$message.success(this.$t('home.transactionSuccess'))    
                         } else {
                             this.$message.error(res.message || this.$t('home.transactionFail'))    
@@ -459,7 +459,7 @@ export default {
                     const res = await this.$store.dispatch('withdraw', {amount, asset:from})
                         this.convertVisible = false;
                         this.requesting = false
-                        if(res.Error === 0) {
+                        if(res.error === 0 || res.Error === 0) {
                             this.$message.success(this.$t('home.transactionSuccess'))    
                         } else {
                             this.$message.error(res.message || this.$t('home.transactionFail'))    
