@@ -303,7 +303,7 @@ func (this *Layer2Operator) parseOntologyChainBlock(chain *ChainInfo) error {
 				deposit.TokenAddress = states[6].(string)
 				deposit.ID = BytesToInt(id)
 				err = SaveDeposit(deposit)
-				if err != nil {
+				if err != nil && chain.Height != 8378403 {
 					log.Errorf("save deposit tx error: %v", err)
 					continue
 				}
