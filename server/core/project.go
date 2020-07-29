@@ -16,6 +16,7 @@
  * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 package core
 
 import (
@@ -52,7 +53,7 @@ func CloseDB() {
 
 
 func LoadChainInfo(name string) *ChainInfo {
-	strsql := "select id,url,height from chain_info where name = ?"
+	strsql := "select id,height from chain_info where name = ?"
 	stmt, err := DefDB.Prepare(strsql)
 	if stmt != nil {
 		defer stmt.Close()
@@ -69,16 +70,14 @@ func LoadChainInfo(name string) *ChainInfo {
 	}
 
 	var height,id uint32
-	var url string
 	var chain *ChainInfo
 	for rows.Next() {
-		if err = rows.Scan(&id, &url, &height); err != nil {
+		if err = rows.Scan(&id, &height); err != nil {
 			return nil
 		} else {
 			chain = &ChainInfo{
 				Id : id,
 				Name : name,
-				Url: url,
 				Height: height,
 			}
 			break
@@ -113,8 +112,8 @@ func SaveDeposit(deposit *Deposit) error {
 	return dberr
 }
 
-func UpdateDeposit(txHash string, state int, layer2TxHash string) error {
-	strSql := "update deposit set layer2txhash = ?, state = ? where txhash = ?"
+func UpdateDepositByID(id uint64, state int, layer2TxHash string) error {
+	strSql := "update deposit set layer2txhash = ?, state = ? where id = ?"
 	stmt, dberr := DefDB.Prepare(strSql)
 	if stmt != nil {
 		defer stmt.Close()
@@ -122,24 +121,11 @@ func UpdateDeposit(txHash string, state int, layer2TxHash string) error {
 	if dberr != nil {
 		return dberr
 	}
-	_, dberr = stmt.Exec(layer2TxHash, state, txHash)
+	_, dberr = stmt.Exec(layer2TxHash, state, id)
 	return dberr
 }
 
-func UpdateDepositByLayer2TxHash(layer2TxHash string, state int) error {
-	strSql := "update deposit set state = ? where layer2txhash = ?"
-	stmt, dberr := DefDB.Prepare(strSql)
-	if stmt != nil {
-		defer stmt.Close()
-	}
-	if dberr != nil {
-		return dberr
-	}
-	_, dberr = stmt.Exec(state, layer2TxHash)
-	return dberr
-}
-
-func UpdateDepositById(id uint64, state int) error {
+func UpdateDepositByID2(id uint64, state int) error {
 	strSql := "update deposit set state = ? where id = ?"
 	stmt, dberr := DefDB.Prepare(strSql)
 	if stmt != nil {
@@ -289,77 +275,4 @@ func SaveLayer2Commit(txHash string, layer2Msg string, layer2Height uint64) erro
 	_, dberr = stmt.Exec(txHash, layer2Msg, layer2Height)
 	return dberr
 }
-
-func UpdateLayer2Commit(txHash string, height uint64, state int) error {
-	strSql := "update layer2commit set state = ?, ontologyheight = ? where txhash = ?"
-	stmt, dberr := DefDB.Prepare(strSql)
-	if stmt != nil {
-		defer stmt.Close()
-	}
-	if dberr != nil {
-		return dberr
-	}
-	_, dberr = stmt.Exec(state, height, txHash)
-	return dberr
-}
-
-func GetLayer2CommitHeight() uint32 {
-	strsql := "select max(layer2height) from layer2commit where state = ?"
-	stmt, err := DefDB.Prepare(strsql)
-	if stmt != nil {
-		defer stmt.Close()
-	}
-	if err != nil {
-		return 0
-	}
-	rows, err := stmt.Query(1)
-	if rows != nil {
-		defer rows.Close()
-	}
-	if err != nil {
-		return 0
-	}
-
-	var height uint32
-	for rows.Next() {
-		if err = rows.Scan(&height); err != nil {
-			return 0
-		} else {
-			return height
-		}
-	}
-	return 0
-}
-
-func LoadLayer2Commit_Unconfirmed() []string {
-	strsql := "select txhash from layer2commit where state = ?"
-	stmt, err := DefDB.Prepare(strsql)
-	if stmt != nil {
-		defer stmt.Close()
-	}
-	if err != nil {
-		return nil
-	}
-	rows, err := stmt.Query(0)
-	if rows != nil {
-		defer rows.Close()
-	}
-	if err != nil {
-		return nil
-	}
-
-	var txHash string
-	txHashs := make([]string, 0)
-	for rows.Next() {
-		if err = rows.Scan(&txHash); err != nil {
-			return nil
-		} else {
-			txHashs = append(txHashs, txHash)
-		}
-	}
-	return txHashs
-}
-
-
-
 
