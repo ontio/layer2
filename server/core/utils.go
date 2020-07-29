@@ -21,7 +21,7 @@ package core
 import (
 	"encoding/hex"
 	"fmt"
-	"github.com/ontio/layer2/go-sdk/common"
+	"github.com/ontio/ontology-go-sdk/common"
 )
 
 const (
