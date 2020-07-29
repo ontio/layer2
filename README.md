@@ -1,59 +1,52 @@
 # Ontology Layer2
 
-English | [中文](README_CN.md)
+中文 | [English](README.md)
 
-## Key Terminology
+## Terminology
 
-### Layer2 Transactions
+### Layer2 Transaction
 
-A transaction or an execution request carried out on Layer2. The user authorizes the action by signing it. A transaction transmitted on the Layer2 may or may not have the same format as a standard transaction on the Ontology main chain.
+An asset transfer between addresses or a smart contract invocation, signed and authorized by the user.
 
 ### Node
 
 A Layer2 node collects all the user transactions, verifies them, and then executes them. The node is mainly responsible for executing the transactions that are part of a newly generated block, updates the state, and generates a state report that is readable by a Layer2 smart contract in order to set a security measure in place.
 
-### Layer2 Block
+### Layer2 Blocks
 
 A node periodically generates Layer2 blocks by collecting the transactions for a particular cycle and encapsulating them in a block.
 
 ### Layer2 State
 
-When a node generates a block containing the transactions for a cycle and updates the state, all the relevant updated state data is sorted to generate a merkle tree. This merkle tree's root hash is then calculated, which is the Layer2 state for the corresponding block.
+When a node generates a block containing the transactions for a cycle and updates the state, all the relevant updated state data is sorted to generate an AVL tree. This merkle tree's root hash is then calculated, which is the Layer2 state for the corresponding block.
 
 ### Operator
 
 The operator is a security daemon on Layer2 that monitors the transactions on Layer2 and verifies whether the sent tokens are transferred successfully to the Ontology main chain. The operator also periodically sends the Layer2 state proof to the Ontology main chain as evidence of transactions having taken place on Layer2.
 
-### Challenger
+## State Storage
 
-The challenger verifies the state proof submitted by the operator to the Ontology main chain. This would require the challenger to synchronize all the transactions that have taken place on Layer2 and maintain a complete state record. Upon synchronizing the executed transactions and updating the state, the challenger can confirm the validity of the state proof submitted by the operator to the main net. If found invalid, the challenger can generate a proof of fraud that can be read by the Layer2 contract to dispute the operator.
+In an AVL tree, the maximum height difference between any two leaf nodes must not be greater than 1. In case an update causes that situation to occur, the tree automatically balances itself to satisfy that condition. Using the primitive AVL tree, a node can store keys. But we use an algorithm with the AVL tree structure such that all the keys are stored as leaf nodes of the AVL tree, but the node locally stores keys that are only used to perform searches on the AVL tree .
+With each new Layer2 block the state is updated and each new key inserted into the tree casues the AVL tree to rebalance and update the root. 
 
+## Process Flow
 
-### Account State Proof
-
-An account state proof includes the account state along with it's merkle proof. The state proof can be fetched from the operator and the challenger, since they both maintain complete state records.
-
-### Proof of Fraud
-
-The proof of fraud contains the account state proof before the current Layer2 block updated it. Since both state proofs are available, the legitimacy of the state proof before the current block updation can be verified. The current state proof can be verified by running the current block.
-
-## Operation Process Flow
-
-### Deposit on Layer2
+###	Deposit to Layer2 
 
 1.	The user carries out a deposit action on the Ontology main chain. The contract locks the user's deposit amount and records it in the Layer2 state. The current state of this deposit amount is "unreleased".
 
 2.	The operator detects the deposit action on the main chain and submits the deposit transaction details to the Layer2 node.
 
-3.	The node creates a new Layer2 block that encapsulates the deposit transaction along with transactions from different users. The Layer2 state is then updated when this block is executed.
+3.	The node creates a new Layer2 block that encapsulates the deposit transaction along with transactions from different users. The Layer2 state is then updated with the execution of this block.
 
-4.	An operator monitors the Layer2 nodes and the new blocks generated. When the updated Layer2 state is sent to the Ontology main chain, along with the request to release the deposit amount on the main chain.
+4.	An operator monitors the Layer2 nodes and the new blocks generated. When the updated Layer2 state is sent to the Ontology main chain, the request to release the deposit amount is sent along with it.
 
-5.	The main chain releases the deposit amount and updates the deposit amount state to released.
+
+5.	The main chain releases the deposit amount and updates the deposit amount state to "released".
 
 <div align=center><img width="360" height="450" src="doc/pic/user_deposit.png"/></div>
 
-### Withdrawal to Ontology
+### Withdraw to Ontology
 
 1.	The user creates a Layer2 withdrawal transaction and sends it to the node.
 
@@ -61,11 +54,9 @@ The proof of fraud contains the account state proof before the current Layer2 bl
 
 3.	The operator sends the Layer2 block state to the Ontology main chain along with the withdrawal request.
 
-4.	The main chain contract carries out the withdrawal transaction request and records the withdrawal action, and then sets the state to not released.
+4.	The main chain contract carries out the withdrawal transaction request and records the withdrawal action, and then sets the state to "unreleased".
 
-5.	Once the state is confirmed, the user sends a withdrawal release request.
-
-6.	The main chain processes and executes the withdrawal release request, sends the withdrawal amount to the target account, and sets the withdraw state to released.
+5.	Once the state is confirmed, The main chain processes and executes the withdrawal release request, sends the withdrawal amount to the target account, and sets the withdraw state to "released".
 
 <div align=center><img width="499" height="450" src="doc/pic/user_withdraw.png"/></div>
 
@@ -73,53 +64,136 @@ The proof of fraud contains the account state proof before the current Layer2 bl
 
 1.	The user creates a Layer2 transfer transaction and sends it to the node.
 
-2.	The node encapsulates the transactions including this transfer transaction to create a Layer2 block. The transactions of this block are executed by Layer2, and the updated block state is then sent to the Ontology main chain.
+2.	The node encapsulates the transactions including this transfer transaction to create a Layer2 block. 
 
-3.	System then awaits state confirmation.
+3. The transactions of this block are executed by Layer2, and the updated block state is then sent to the Ontology main chain.
 
-### Transactions and Security Measures
+4.	System then awaits state confirmation.
 
-<div align=center><img width="650" height="450" src="doc/pic/system.png"/></div>
+<div align=center><img width="650" height="450" src="doc/pic/user_transfer.png"/></div>
 
-## Account Infrastructure
+### Storage and Verification
 
-An account is created using a trackable Merkle tree data structure. A merkle tree contains and maintains the original root hash and the updated account record.
+1. The user invokes a Layer2 application contract method.
 
-<div align=center><img width="450" height="660" src="doc/pic/account.png"/></div>
+2. When this invocation transaction is included in a Layer2 block that is executed, the state is updated if the contract stores a value for a key, and a new state root is generated.
 
-Every state root corresponds to a fixed height starting from 0 at the bottom and progressively increasing towards the top. Each state root corresponding to each height is recorded on the chain.
+3. When the operator picks up this new Layer2 state it transmits it to the Ontology main chain.
 
-### How to Prove the Validity of an Account State?
+4. The user fetches the proof from Layer2 using the key.
 
-Say an account state gets updated at some arbitrary height. At this height, the state tree contains the current account state and exists as a Merkle tree in itself, a sub-tree with respect to the complete merkle tree. Now, the root hash of this sub-tree exists on the chain and can be used to generate the merkle proof. Thus, this root hash can be used to validate this account's current state.
+5. The user fetches the Layer2 state from the Ontology main chain.
 
-But there is a possibility that this account state isn't the latest, since when the account state is updated so is the merkle tree subsequently. The challenge mechanism can be used to determine the account validity by submitting the account merkle proof. If the calculated root hash of this state is higher than that of the current block state, the challenge is considered successful.
+6. The user verifies the stored value corresponding to the key using the proof and Layer2 state.
 
-### Why is such a Merkle Tree Necessary?
+<div align=center><img width="650" height="450" src="doc/pic/user_store.png"/></div>
 
-The state root of all the heights of the merkle tree are recorded on the chain. This information can be used to verify the validity of account state at any given point of time as it gets updated. The change that takes place in account state can be represented to be a function in two variables in the following manner:
 
-**`S = F(S'，Txs)`**
+## Usage
 
-Here, `S'` is any arbitrary state, `Txs` is a transaction, and `S` is the new state that is obtained by updating `S'` upon execution of the transaction `Txs`. 
+Here is an illustration that demonstrates fetching and verifying the stored value from the Layer2 contract `7680bc3227089ee6ac790be698e88bcd0be04609`.
 
-The simplest on-chain method of establishing the validity of a particular state is by sending the complete `S'` and `Txs` record to the chain. The validity of the updated state is established by comparing its state root to that of the on-chain state `S'`, which is calculated by executing the `Txs` transactions.
+```go
+func GetCommitedLayer2Height(ontsdk *ontology_go_sdk.OntologySdk, contract common.Address) (uint32, error) {
+	tx, err := ontsdk.NeoVM.NewNeoVMInvokeTransaction(0, 0, contract, []interface{}{"getCurrentHeight", []interface{}{}})
+	if err != nil {
+		return 0, err
+	}
+	result, err := ontsdk.PreExecTransaction(tx)
+	if err != nil {
+		fmt.Printf("PreExecTransaction failed! err: %s", err.Error())
+		return 0, err
+	}
+	if result == nil {
+		fmt.Printf("can not find the result")
+		return 0, fmt.Errorf("can not find current height!")
+	}
+	height, err := result.Result.ToInteger()
+	if err != nil {
+		return 0, fmt.Errorf("current height is not right!")
+	}
+	return uint32(height.Uint64()), nil
+}
 
-However, there are certain issues with this method, as stated below:
 
-1.	Calculating the state by executing all the transaction records is a process that usually has limitations, especially considering the fact that the total state usually consists of a very large number of transactions.
+func GetCommitedLayer2StateByHeight(ontsdk *ontology_go_sdk.OntologySdk, contract common.Address, height uint32) ([]byte, uint32, error) {
+	tx, err := ontsdk.NeoVM.NewNeoVMInvokeTransaction(0, 0, contract, []interface{}{"getStateRootByHeight", []interface{}{height}})
+	if err != nil {
+		fmt.Printf("new transaction failed!")
+	}
+	result, err := ontsdk.PreExecTransaction(tx)
+	if err != nil {
+		fmt.Printf("PreExecTransaction failed! err: %s", err.Error())
+		return nil, 0, err
+	}
+	if result == nil {
+		fmt.Printf("can not find the result")
+		return nil, 0, fmt.Errorf("can not find state of heigh: %d", height)
+	}
+	tt, _ := result.Result.ToArray()
+	if len(tt) != 3 {
+		fmt.Printf("result is not right")
+		return nil, 0, fmt.Errorf("result is not right, height: %d", height)
+	}
+	item0,_ := tt[0].ToString()
+	item1,_ := tt[1].ToInteger()
+	item2,_ := tt[2].ToInteger()
+	fmt.Printf("item0: %s, item1: %d, item2: %d\n", item0, item1, item2)
+	stateRoot, err := common.Uint256FromHexString(item0)
+	if err != nil {
+		return nil, 0, fmt.Errorf("state hash is not right, height: %d", height)
+	}
+	return stateRoot.ToArray(), uint32(item1.Uint64()), nil
+}
 
-2. Under normal circumstances there is a very small no. of transactions that actually have an effect on the account state.
-   
+func TestVerifyContractStore(t *testing.T) {
+	sdk := newLayer2Sdk()
+	key, _ := sdk.GetStoreKey(STORE_CONTRACT, []byte("hello"))
+	store, err := sdk.GetStoreProof(key)
+	if err  != nil {
+		panic(err)
+	}
+	fmt.Printf("value: %s, proof: %s, height: %d\n", store.Value, store.Proof, store.Height)
 
-The small no. of accounts can be used to track the state changes, and this can be a new implementation method.
+	proof_byte, _ := hex.DecodeString(store.Proof)
+	source := common.NewZeroCopySource(proof_byte)
+	proof := new(types.StoreProof)
+	err = proof.Deserialization(source)
+	if err != nil {
+		panic(err)
+	}
 
-Instead of sending the complete `S'` it is possible to send the `Txs` transactions that update the state `S'` and their respective merkle proofs. We have already discussed how to validate this particular state. It is possible to calculate the new state root for `S` by partly executing the transactions, generating a new state, and then adding the `S'` state root to it. This can then be used to determine the validity the state change.
+	ont_sdk := newOntologySdk()
+	contractAddress, _ := common.AddressFromHexString(LAYER2_CONTRACT)
+	curHeight, err := GetCommitedLayer2Height(ont_sdk, contractAddress)
+	if err != nil {
+		panic(err)
+	}
 
-The advantages to using the above stated method are:
+	for curHeight < store.Height {
+		time.Sleep(time.Second * 1)
+		curHeight, err = GetCommitedLayer2Height(ont_sdk, contractAddress)
+		if err != nil {
+			panic(err)
+		}
+	}
 
-1.	No matter how many total states there are, the number of sub-trees and their merkle proofs remains small if the number of updated states isn't too large.
+	stateRoot, height, err := GetCommitedLayer2StateByHeight(ont_sdk, contractAddress, store.Height)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("state root: %s, height: %d\n", hex.EncodeToString(stateRoot), height)
 
-2.	Lower state verification overhead with high efficiency since only a small number of transactions and merkle proofs needed to be provided in order to determine state validity.
-
-3.	It is possible to determine the updation process of a state.
+	proof_iavl := iavl.RangeProof(*proof)
+	err = proof_iavl.Verify(stateRoot)
+	if err != nil {
+		panic(err)
+	}
+	value_bytes, _ := hex.DecodeString(store.Value)
+	err = proof_iavl.VerifyItem(key, value_bytes)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("verify successful!\n")
+}
+```

@@ -25,6 +25,8 @@ WITHDRAW_PREFIX = 'withdraw'
 
 CURRENT_DEPOSIT_ID = 'currentDepositId'
 
+INITED = 'Initialized'
+
 CURRENT_WITHDRAW_ID = 'currentWithdrawId'
 
 CURRENT_HEIGHT = 'currentHeight'
@@ -32,8 +34,6 @@ CURRENT_HEIGHT = 'currentHeight'
 Current_STATE_PREFIX = 'stateRoot'
 
 CONFRIM_HEIGHT = 'confirmHeight'
-
-INITED = 'Initialized'
 
 OPERATOR_ADDRESS = 'operator'
 
@@ -69,6 +69,9 @@ def Main(operation, args):
         assert (len(args) == 1)
         height = args[0]
         return getStateRootByHeight(height)
+    if operation == 'getCurrentHeight':
+        assert (len(args) == 0)
+        return getCurrentHeight()
     return True
 
 
@@ -179,6 +182,11 @@ def getStateRootByHeight(height):
         stateRoot = Deserialize(stateRootInfo)
         return stateRoot
     return []
+
+
+def getCurrentHeight():
+    height = Get(GetContext(), CURRENT_HEIGHT)
+    return height
 
 
 def _updateDepositState(depositIds):

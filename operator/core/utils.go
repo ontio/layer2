@@ -24,7 +24,7 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
-	"github.com/ontio/layer2/go-sdk/common"
+	ontology_common "github.com/ontio/ontology/common"
 )
 
 const (
@@ -38,6 +38,8 @@ const (
 	ONG_CONTRACT_ADDRESS_BASE58        = "AFmseVrdL9f9oyCzZefL9tG6UbvhfRZMHJ"
 	GOVERNANCE_CONTRACT_ADDRESS        = "0700000000000000000000000000000000000000"
 	GOVERNANCE_CONTRACT_ADDRESS_BASE58 = "AFmseVrdL9f9oyCzZefL9tG6UbviEH9ugK"
+	LAYER_TRANSACTION_RETRY = 300
+	LAYER_COMMIT_CHECK_COUNTER = 300
 )
 
 const (
@@ -59,10 +61,16 @@ const (
 	LAYER2MSG_FAILED
 )
 
+type Layer2State struct {
+	Version    byte
+	Height     uint32
+	StatesRoot ontology_common.Uint256
+	SigData [][]byte
+}
+
 type ChainInfo struct {
 	Name        string
 	Id          uint32
-	Url         string
 	Height      uint32
 }
 
@@ -123,7 +131,7 @@ func (this *Layer2Tx) Dump() string {
 }
 
 type Layer2CommitMsg struct {
-	Layer2State       *common.Layer2State
+	Layer2State       *Layer2State
 	Deposits          []uint64
 	WithDraws         []*Withdraw
 }

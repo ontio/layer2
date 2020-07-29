@@ -71,6 +71,7 @@ type Layer2Config struct {
 	RestURL                 string
 	WalletFile              string
 	WalletPwd               string
+	MinOngLimit             uint64
 	GasPrice                uint64
 	GasLimit                uint64
 }

@@ -1,23 +1,24 @@
 {
   "OntologyConfig":{
-    "RestURL":"http://polaris1.ont.io:20336",
-    "Layer2ContractAddress":"4229a92d90d446d1598e12e35698b681ae4d4642",
+    "RestURL":"http://polaris4.ont.io:20336",
+    "Layer2ContractAddress":"0aad0408c6e4615b2f3f90c0c8c912649619a379",
     "WalletFile":"./wallet_ontology.dat",
     "WalletPwd":"1",
-    "GasPrice":0,
-    "GasLimit":2000000
+    "GasPrice":2500,
+    "GasLimit":6000000
   },
   "Layer2Config":{
-    "RestURL":"http://localhost:40336",
+    "RestURL":"http://localhost:20336",
     "WalletFile":"./wallet_layer2.dat",
     "WalletPwd":"1",
+    "MinOngLimit": 100000000,
     "GasPrice":0,
     "GasLimit":2000000
   },
   "DBConfig":{
     "ProjectDBUrl":"127.0.0.1:3306",
     "ProjectDBUser":"root",
-    "ProjectDBPassword":"root1234",
+    "ProjectDBPassword":"root",
     "ProjectDBName":"layer2"
   }
 }
