@@ -72,6 +72,8 @@ type Layer2Config struct {
 	WalletFile              string
 	WalletPwd               string
 	MinOngLimit             uint64
+	BlockDuration           uint64
+	MaxBatchSize            uint64
 	GasPrice                uint64
 	GasLimit                uint64
 }

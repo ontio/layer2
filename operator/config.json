@@ -12,6 +12,8 @@
     "WalletFile":"./wallet_layer2.dat",
     "WalletPwd":"1",
     "MinOngLimit": 100000000,
+    "BlockDuration": 60,
+    "MaxBatchSize": 10,
     "GasPrice":0,
     "GasLimit":2000000
   },
