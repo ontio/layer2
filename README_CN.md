@@ -148,8 +148,11 @@ func GetCommitedLayer2StateByHeight(ontsdk *ontology_go_sdk.OntologySdk, contrac
 	return stateRoot.ToArray(), uint32(item1.Uint64()), nil
 }
 
-func TestVerifyContractStore(t *testing.T) {
+// verify the store
+func TestVerifyContractStore1(t *testing.T) {
 	sdk := newLayer2Sdk()
+	// 1. get the store key
+	//    get the store data, store proof by the key
 	key, _ := sdk.GetStoreKey(STORE_CONTRACT, []byte("hello"))
 	store, err := sdk.GetStoreProof(key)
 	if err  != nil {
@@ -157,21 +160,13 @@ func TestVerifyContractStore(t *testing.T) {
 	}
 	fmt.Printf("value: %s, proof: %s, height: %d\n", store.Value, store.Proof, store.Height)
 
-	proof_byte, _ := hex.DecodeString(store.Proof)
-	source := common.NewZeroCopySource(proof_byte)
-	proof := new(types.StoreProof)
-	err = proof.Deserialization(source)
-	if err != nil {
-		panic(err)
-	}
-
+    // 2. ensure the state root of the store is commited to ontology
 	ont_sdk := newOntologySdk()
 	contractAddress, _ := common.AddressFromHexString(LAYER2_CONTRACT)
 	curHeight, err := GetCommitedLayer2Height(ont_sdk, contractAddress)
 	if err != nil {
 		panic(err)
 	}
-
 	for curHeight < store.Height {
 		time.Sleep(time.Second * 1)
 		curHeight, err = GetCommitedLayer2Height(ont_sdk, contractAddress)
@@ -180,22 +175,24 @@ func TestVerifyContractStore(t *testing.T) {
 		}
 	}
 
+    // 3. get the state root which is commited to ontology
 	stateRoot, height, err := GetCommitedLayer2StateByHeight(ont_sdk, contractAddress, store.Height)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Printf("state root: %s, height: %d\n", hex.EncodeToString(stateRoot), height)
 
-	proof_iavl := iavl.RangeProof(*proof)
-	err = proof_iavl.Verify(stateRoot)
-	if err != nil {
-		panic(err)
-	}
+    // 4. verify the data is stored through the store proof and state root
+	proof_byte, _ := hex.DecodeString(store.Proof)
 	value_bytes, _ := hex.DecodeString(store.Value)
-	err = proof_iavl.VerifyItem(key, value_bytes)
+	result, err := sdk.VerifyStoreProof(key, value_bytes, proof_byte, stateRoot)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("verify successful!\n")
+	if result {
+		fmt.Printf("verify successful!\n")
+	} else {
+		fmt.Printf("verify failed!\n")
+	}
 }
 ```
