@@ -82,12 +82,12 @@ Sample `stateRoot`:
 
 ## Installing the Collector - Node
 
-Please refer to the Node program guide and download and compile the source code to run the node. Please reference [Layer2 Node install guide](https://github.com/ontio/ontology/blob/layer2/README.md). After that, upload the node, `config.json` configuration file, and the `wallet_layer2.dat` Layer2 wallet file to the machine where the node is to be deployed. After uploading successfully, rename the wallet file from `wallet_layer2.dat` to `wallet.dat`.
+Please refer to the Node program guide and download and compile the source code to run the node. Please reference [Layer2 Node install guide](https://github.com/ontio/ontology/blob/layer2/README.md). After that, upload the ontology, `config.json` configuration file, and the `wallet_layer2.dat` Layer2 wallet file to the machine where the node is to be deployed. After uploading successfully, rename the wallet file from `wallet_layer2.dat` to `wallet.dat`.
 
 Use the following command to start the node:
 
 ```shell
-echo '1' | ./Node --layer2mode true --testmode-gen-block-time 6 --rpcport 20336 --nodeport 20338 --ws --wsport 20335 --rest --restport 20334 --loglevel 1 > log &
+echo '1' | ./ontology --layer2mode true --testmode-gen-block-time 6 --rpcport 20336 --nodeport 20338 --ws --wsport 20335 --rest --restport 20334 --loglevel 1 > log &
 ```
 
 Enter the password as `1` when prompted to start the node service in the back end.

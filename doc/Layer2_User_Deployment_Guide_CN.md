@@ -82,11 +82,11 @@ confirmHeight指定了用户在Layer2进行withdraw后，需要多少个状态�
 
 ## 安装收集程序Node
 
-用户需要按照Node程序的指导手册下载和编译Node，请参考[Layer2 Node安装指导](https://github.com/ontio/ontology/blob/layer2/README_CN.md)，安装完成后，将Node、配置文件config.json以及上面准备的layer2钱包文件wallet_layer2.dat一起上传到部署机器上，重命名wallet_layer2.dat为wallet.dat。
+用户需要按照Node程序的指导手册下载和编译Node，请参考[Layer2 Node安装指导](https://github.com/ontio/ontology/blob/layer2/README_CN.md)，安装完成后，将ontology、配置文件config.json以及上面准备的layer2钱包文件wallet_layer2.dat一起上传到部署机器上，重命名wallet_layer2.dat为wallet.dat。
 
 使用以下命令来启动Node：
 ```
-echo '1' | ./Node --layer2mode true --testmode-gen-block-time 6 --rpcport 20336 --nodeport 20338 --ws --wsport 20335 --rest --restport 20334 --loglevel 1 > log &
+echo '1' | ./ontology --layer2mode true --testmode-gen-block-time 6 --rpcport 20336 --nodeport 20338 --ws --wsport 20335 --rest --restport 20334 --loglevel 1 > log &
 ```
 以上命令会在后台启动Node服务，输入钱包文件wallet.dat的密码'1'来启动Node。
 

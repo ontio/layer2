@@ -98,8 +98,8 @@ Operator是Layer2的安全守护程序，负责监听Ontology主链是否有到L
 
 Network|Layer2 Node|Layer2 Contract
 :--:|:--:|:--:
-MainNet|http://127.0.0.1:20336|0aad0408c6e4615b2f3f90c0c8c912649619a379
-TestNet|http://127.0.0.1:20336|0aad0408c6e4615b2f3f90c0c8c912649619a379
+MainNet|http://107.155.55.167:20336|5f4e1bdba28f0183fe4e90929de3b45baca2e831
+TestNet|http://152.32.217.204:20336|f05db35f619a991435b160b21e4d9371fdc0d9f2
 
 ## 使用
 

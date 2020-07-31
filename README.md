@@ -97,7 +97,7 @@ Please reference [Layer2 User Deployment Guide](https://github.com/ontio/layer2/
 Network|Layer2 Node|Layer2 Contract
 :--:|:--:|:--:
 MainNet|http://127.0.0.1:20336|0aad0408c6e4615b2f3f90c0c8c912649619a379
-TestNet|http://127.0.0.1:20336|0aad0408c6e4615b2f3f90c0c8c912649619a379
+TestNet|http://127.0.0.1:20336|f05db35f619a991435b160b21e4d9371fdc0d9f2
 
 ## Usage
 
