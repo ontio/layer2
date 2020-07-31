@@ -58,7 +58,7 @@ With each new Layer2 block the state is updated and each new key inserted into t
 
 5.	Once the state is confirmed, The main chain processes and executes the withdrawal release request, sends the withdrawal amount to the target account, and sets the withdraw state to "released".
 
-<div align=center><img width="850" height="450" src="doc/pic/user_withdraw.png"/></div>
+<div align=center><img width="750" height="450" src="doc/pic/user_withdraw.png"/></div>
 
 ###	User Layer Transactions
 
