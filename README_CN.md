@@ -196,3 +196,57 @@ func TestVerifyContractStore1(t *testing.T) {
 	}
 }
 ```
+
+以下示例如何从ontology deposit到layer2，以及从layer2 withdraw到ontology
+
+```
+func ontologyDeposit(ontsdk *ontology_go_sdk.OntologySdk, payer *ontology_go_sdk.Account, contract ontology_common.Address, token []byte, amount uint64) (ontology_common.Uint256, error) {
+	tx, err := ontsdk.NeoVM.NewNeoVMInvokeTransaction(2500, 400000, contract, []interface{}{"deposit", []interface{}{
+		payer.Address, amount, token}})
+	if err != nil {
+		fmt.Printf("new transaction failed!")
+	}
+	ontsdk.SetPayer(tx, payer.Address)
+	err = ontsdk.SignToTransaction(tx, payer)
+	if err != nil {
+		fmt.Printf("SignToTransaction failed!")
+	}
+	txHash, err := ontsdk.SendTransaction(tx)
+	if err != nil {
+		fmt.Printf("SignToTransaction failed! err: %s", err.Error())
+	}
+	return txHash, nil
+}
+
+// deposit to layer2
+func TestOntologyDeposit2Layer2(t *testing.T) {
+	ontSdk := newOntologySdk()
+	contractAddress, _ := common.AddressFromHexString(LAYER2_CONTRACT)
+	account_user, err := newOntologyUserAccount(ontSdk)
+	if err != nil {
+		panic(err)
+	}
+	tokenAddress, _ := hex.DecodeString("0000000000000000000000000000000000000002")
+	txHash, err := ontologyDeposit(ontSdk, account_user, contractAddress, tokenAddress, 3000000000)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("hash: %s", txHash.ToHexString())
+}
+
+// withdraw to ontology
+func layer2WithdrawTransfer(ontsdk *ontology_go_sdk.OntologySdk, payer *ontology_go_sdk.Account, from ontology_common.Address, amount uint64) (ontology_common.Uint256, error) {
+	tx, err := ontsdk.Native.Ong.NewTransferTransaction(0, 20000, from, ontology_common.ADDRESS_EMPTY, amount)
+	if err != nil {
+		return ontology_common.UINT256_EMPTY, err
+	}
+	if payer != nil {
+		ontsdk.SetPayer(tx, payer.Address)
+		err = ontsdk.SignToTransaction(tx, payer)
+		if err != nil {
+			return ontology_common.UINT256_EMPTY, err
+		}
+	}
+	return ontsdk.SendTransaction(tx)
+}
+```
