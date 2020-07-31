@@ -44,7 +44,7 @@ Operator是Layer2的安全守护程序，负责监听Ontology主链是否有到L
 
 5.	主链合约执行deposit释放操作，修改deposit资金状态为“已释放”。
 
-<div align=center><img width="360" height="450" src="doc/pic/user_deposit.png"/></div>
+<div align=center><img width="350" height="450" src="doc/pic/user_deposit_cn.png"/></div>
 
 ### Withdraw到Ontology
 
@@ -58,7 +58,7 @@ Operator是Layer2的安全守护程序，负责监听Ontology主链是否有到L
 
 5.	在State确认后，主链合约执行Withdraw释放请求，给目标账户转账，同时设置withdraw记录为“已释放“
 
-<div align=center><img width="499" height="450" src="doc/pic/user_withdraw.png"/></div>
+<div align=center><img width="450" height="450" src="doc/pic/user_withdraw_cn.png"/></div>
 
 ###	用户Layer交易
 
@@ -72,7 +72,7 @@ Operator是Layer2的安全守护程序，负责监听Ontology主链是否有到L
 
 ### 用户Layer交易
 
-<div align=center><img width="650" height="450" src="doc/pic/user_transfer.png"/></div>
+<div align=center><img width="550" height="450" src="doc/pic/user_transfer_cn.png"/></div>
 
 ### 存储以及验证
 
@@ -88,15 +88,22 @@ Operator是Layer2的安全守护程序，负责监听Ontology主链是否有到L
 
 6. 用户基于存储Proof和Layer2 State来验证Key的存储Value。
 
-<div align=center><img width="650" height="450" src="doc/pic/user_store.png"/></div>
+<div align=center><img width="650" height="450" src="doc/pic/user_store_cn.png"/></div>
 
 ## 安装
 
-安装手册 [layer2部署指导](https://github.com/ontio/layer2/blob/master/doc/Layer2_User_Deployment_Guide_CN.md)
+安装手册 [Layer2用户部署指导](https://github.com/ontio/layer2/blob/master/doc/Layer2_User_Deployment_Guide_CN.md)
+
+## Service
+
+Network|Layer2 Node|Layer2 Contract
+:--:|:--:|:--:
+MainNet|http://107.155.55.167:20336|5f4e1bdba28f0183fe4e90929de3b45baca2e831
+TestNet|http://152.32.217.204:20336|f05db35f619a991435b160b21e4d9371fdc0d9f2
 
 ## 使用
 
-请使用[Layer2的SDK](https://github.com/ontio/ontology-go-sdk/tree/layer2)
+请使用[Layer2 SDK](https://github.com/ontio/ontology-go-sdk/tree/layer2)
 
 以下是一个示例，从Layer2的合约7680bc3227089ee6ac790be698e88bcd0be04609中查询存储的Value并验证。
 
