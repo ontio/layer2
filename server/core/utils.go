@@ -16,46 +16,24 @@
  * along with The ontology.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 package core
 
 import (
-	"encoding/hex"
 	"fmt"
-	"github.com/ontio/layer2/go-sdk/common"
+	ontology_common "github.com/ontio/ontology/common"
 )
 
-const (
-	NOTIFY_TRANSFER = "transfer"
-
-	ONT_CONTRACT_ADDRESS               = "0100000000000000000000000000000000000000"
-	ONT_CONTRACT_ADDRESS_BASE58        = "AFmseVrdL9f9oyCzZefL9tG6UbvhUMqNMV"
-	ONG_CONTRACT_ADDRESS               = "0200000000000000000000000000000000000000"
-	ONG_CONTRACT_ADDRESS_BASE58        = "AFmseVrdL9f9oyCzZefL9tG6UbvhfRZMHJ"
-	GOVERNANCE_CONTRACT_ADDRESS        = "0700000000000000000000000000000000000000"
-	GOVERNANCE_CONTRACT_ADDRESS_BASE58 = "AFmseVrdL9f9oyCzZefL9tG6UbviEH9ugK"
-)
-
-const (
-	DEPOSIT_EVENT = iota
-	DEPOSIT_COMMIT
-	DEPOSIT_FINISH
-	DEPOSIT_NOTIFY
-)
-
-const (
-	WITHDRAW_INT = iota
-	WITHDRAW_COMMIT
-)
-
-const (
-	LAYER2MSG_COMMIT = iota
-	LAYER2MSG_FINISH
-)
+type Layer2State struct {
+	Version    byte
+	Height     uint32
+	StatesRoot ontology_common.Uint256
+	SigData [][]byte
+}
 
 type ChainInfo struct {
 	Name        string
 	Id          uint32
-	Url         string
 	Height      uint32
 }
 
@@ -73,7 +51,7 @@ type Deposit struct {
 
 func (this *Deposit) Dump() string {
 	dumpStr := ""
-	dumpStr += fmt.Sprintf("Demposit: TxHash: %s, TT: %d, State: %d, Height: %d, FromAddress: %s, Amount: %d, TokenAddress: %s",
+	dumpStr += fmt.Sprintf("Deposit: TxHash: %s, TT: %d, State: %d, Height: %d, FromAddress: %s, Amount: %d, TokenAddress: %s",
 		this.TxHash, this.TT, this.State, this.Height, this.FromAddress, this.Amount, this.TokenAddress)
 	return dumpStr
 }
@@ -116,8 +94,8 @@ func (this *Layer2Tx) Dump() string {
 }
 
 type Layer2CommitMsg struct {
-	Layer2State       *common.Layer2State
-	Deposits          []uint32
+	Layer2State       *Layer2State
+	Deposits          []uint64
 	WithDraws         []*Withdraw
 }
 
@@ -137,11 +115,9 @@ func (this *Layer2CommitMsg) Dump() string {
 	return dumpStr
 }
 
-func revertHexString(a string) string {
-	b, _ := hex.DecodeString(a)
-	c := make([]byte, 0)
-	for i := len(b) - 1;i >= 0;i -- {
-		c = append(c, b[i])
-	}
-	return hex.EncodeToString(c)
+func (this *Layer2CommitMsg) Dump1() string {
+	dumpStr := "Layer2 commit msg: "
+	dumpStr += fmt.Sprintf("layer2 state, Version: %d, Height: %d, StatesRoot: %s",
+		this.Layer2State.Version, this.Layer2State.Height, this.Layer2State.StatesRoot.ToHexString())
+	return dumpStr
 }

@@ -5,13 +5,12 @@ DROP TABLE IF EXISTS `chain_info`;
 CREATE TABLE `chain_info` (
  `name` VARCHAR(100) NOT NULL COMMENT '链名称',
  `id`  INT(4) NOT NULL COMMENT '链id',
- `url` VARCHAR(256) NOT NULL COMMENT '访问链的url',
  `height` INT(4) NOT NULL COMMENT '解析的区块高度',
  PRIMARY KEY (`id`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
-INSERT INTO `chain_info`(`name`,`id`,`url`,`height`) VALUES("ontology",1,"http://138.91.6.125:20336",0);
-INSERT INTO `chain_info`(`name`,`id`,`url`,`height`) VALUES("layer2",2,"http://47.90.189.186:40332",0);
+INSERT INTO `chain_info`(`name`,`id`,`height`) VALUES("ontology",1,0);
+INSERT INTO `chain_info`(`name`,`id`,`height`) VALUES("layer2",2,0);
 
 DROP TABLE IF EXISTS `deposit`;
 CREATE TABLE `deposit` (
@@ -59,10 +58,6 @@ CREATE TABLE `layer2tx` (
 DROP TABLE IF EXISTS `layer2commit`;
 CREATE TABLE `layer2commit` (
  `txhash`  VARCHAR(256) NOT NULL COMMENT '交易hash',
- `state` INT(1)  DEFAULT 0 COMMENT '交易状态',
- `tt` INT(4) DEFAULT 0 COMMENT '交易时间',
- `fee` BIGINT(8) DEFAULT 0 COMMENT '交易手续费',
- `ontologyheight` INT(4) DEFAULT 0 COMMENT '交易的高度',
  `layer2height` INT(4) DEFAULT 0 COMMENT '交易的高度',
  `layer2msg` VARCHAR(1024) NOT NULL COMMENT 'laeyr2 msg',
  PRIMARY KEY (`txhash`)

@@ -68,7 +68,7 @@ stateRoot指定了Layer2的创世状态，如以下创世状态
     },
     {
         "type": "String",
-        "value": "1.0.0"
+        "value": "1"
     }
 ]
 ```
@@ -107,13 +107,12 @@ DROP TABLE IF EXISTS `chain_info`;
 CREATE TABLE `chain_info` (
  `name` VARCHAR(100) NOT NULL COMMENT '链名称',
  `id`  INT(4) NOT NULL COMMENT '链id',
- `url` VARCHAR(256) NOT NULL COMMENT '访问链的url',
  `height` INT(4) NOT NULL COMMENT '解析的区块高度',
  PRIMARY KEY (`id`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
-INSERT INTO `chain_info`(`name`,`id`,`url`,`height`) VALUES("ontology",1,"http://138.91.6.125:20336",0);
-INSERT INTO `chain_info`(`name`,`id`,`url`,`height`) VALUES("layer2",2,"http://47.90.189.186:40332",0);
+INSERT INTO `chain_info`(`name`,`id`,`height`) VALUES("ontology",1,0);
+INSERT INTO `chain_info`(`name`,`id`,`height`) VALUES("layer2",2,0);
 
 DROP TABLE IF EXISTS `deposit`;
 CREATE TABLE `deposit` (
@@ -124,9 +123,10 @@ CREATE TABLE `deposit` (
  `fromaddress` VARCHAR(256) NOT NULL COMMENT '地址',
  `amount` BIGINT(8) NOT NULL COMMENT 'deposit的金额',
  `tokenaddress` VARCHAR(256) NOT NULL COMMENT '币地址',
- `id` INT(4) NOT NULL COMMENT '交易的高度',
+ `id` INT(4) NOT NULL COMMENT '交易的ID',
  `layer2txhash` VARCHAR(256) DEFAULT NULL COMMENT 'layer2交易hash',
- PRIMARY KEY (`txhash`)
+ PRIMARY KEY (`id`),
+ UNIQUE (`txhash`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 
@@ -160,10 +160,6 @@ CREATE TABLE `layer2tx` (
 DROP TABLE IF EXISTS `layer2commit`;
 CREATE TABLE `layer2commit` (
  `txhash`  VARCHAR(256) NOT NULL COMMENT '交易hash',
- `state` INT(1)  DEFAULT 0 COMMENT '交易状态',
- `tt` INT(4) DEFAULT 0 COMMENT '交易时间',
- `fee` BIGINT(8) DEFAULT 0 COMMENT '交易手续费',
- `ontologyheight` INT(4) DEFAULT 0 COMMENT '交易的高度',
  `layer2height` INT(4) DEFAULT 0 COMMENT '交易的高度',
  `layer2msg` VARCHAR(1024) NOT NULL COMMENT 'laeyr2 msg',
  PRIMARY KEY (`txhash`)
@@ -177,24 +173,25 @@ CREATE TABLE `layer2commit` (
 ```
 {
   "OntologyConfig":{
-    "RestURL":"http://polaris1.ont.io:20336",
-    "Layer2ContractAddress":"4229a92d90d446d1598e12e35698b681ae4d4642",
+    "RestURL":"http://polaris4.ont.io:20336",
+    "Layer2ContractAddress":"0aad0408c6e4615b2f3f90c0c8c912649619a379",
     "WalletFile":"./wallet_ontology.dat",
     "WalletPwd":"1",
-    "GasPrice":0,
-    "GasLimit":2000000
+    "GasPrice":2500,
+    "GasLimit":6000000
   },
   "Layer2Config":{
-    "RestURL":"http://localhost:40336",
+    "RestURL":"http://localhost:20336",
     "WalletFile":"./wallet_layer2.dat",
     "WalletPwd":"1",
+    "MinOngLimit": 100000000,
     "GasPrice":0,
     "GasLimit":2000000
   },
   "DBConfig":{
     "ProjectDBUrl":"127.0.0.1:3306",
     "ProjectDBUser":"root",
-    "ProjectDBPassword":"root1234",
+    "ProjectDBPassword":"root",
     "ProjectDBName":"layer2"
   }
 }

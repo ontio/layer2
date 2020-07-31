@@ -18,67 +18,63 @@ USE `layer2`;
 
 DROP TABLE IF EXISTS `chain_info`;
 CREATE TABLE `chain_info` (
- `name` VARCHAR(100) NOT NULL COMMENT 'Chain Name',
- `id`  INT(4) NOT NULL COMMENT 'Chain ID',
- `url` VARCHAR(256) NOT NULL COMMENT 'URL of accessing chain',
- `height` INT(4) NOT NULL COMMENT 'Block height',
+ `name` VARCHAR(100) NOT NULL COMMENT '链名称',
+ `id`  INT(4) NOT NULL COMMENT '链id',
+ `height` INT(4) NOT NULL COMMENT '解析的区块高度',
  PRIMARY KEY (`id`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
-INSERT INTO `chain_info`(`name`,`id`,`url`,`height`) VALUES("ontology",1,"http://138.91.6.125:20336",0);
-INSERT INTO `chain_info`(`name`,`id`,`url`,`height`) VALUES("layer2",2,"http://47.90.189.186:40332",0);
+INSERT INTO `chain_info`(`name`,`id`,`height`) VALUES("ontology",1,0);
+INSERT INTO `chain_info`(`name`,`id`,`height`) VALUES("layer2",2,0);
 
 DROP TABLE IF EXISTS `deposit`;
 CREATE TABLE `deposit` (
- `txhash`  VARCHAR(256) NOT NULL COMMENT 'Transaction hash',
- `tt` INT(4) NOT NULL COMMENT 'Transaction time',
- `state` INT(1) NOT NULL COMMENT 'Transaction state',
- `height` INT(4) NOT NULL COMMENT 'Transaction block height',
- `fromaddress` VARCHAR(256) NOT NULL COMMENT 'Source address',
- `amount` BIGINT(8) NOT NULL COMMENT 'Deposit amount',
- `tokenaddress` VARCHAR(256) NOT NULL COMMENT 'Token contract address',
- `id` INT(4) NOT NULL COMMENT 'ID',
- `layer2txhash` VARCHAR(256) DEFAULT NULL COMMENT 'Layer2 transaction hash',
- PRIMARY KEY (`txhash`)
+ `txhash`  VARCHAR(256) NOT NULL COMMENT '交易hash',
+ `tt` INT(4) NOT NULL COMMENT '交易时间',
+ `state` INT(1) NOT NULL COMMENT '交易状态',
+ `height` INT(4) NOT NULL COMMENT '交易的高度',
+ `fromaddress` VARCHAR(256) NOT NULL COMMENT '地址',
+ `amount` BIGINT(8) NOT NULL COMMENT 'deposit的金额',
+ `tokenaddress` VARCHAR(256) NOT NULL COMMENT '币地址',
+ `id` INT(4) NOT NULL COMMENT '交易的ID',
+ `layer2txhash` VARCHAR(256) DEFAULT NULL COMMENT 'layer2交易hash',
+ PRIMARY KEY (`id`),
+ UNIQUE (`txhash`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `withdraw`;
 CREATE TABLE `withdraw` (
- `txhash`  VARCHAR(256) NOT NULL COMMENT 'Transaction hash',
- `tt` INT(4) NOT NULL COMMENT 'Transaction time',
- `state` INT(1) NOT NULL COMMENT 'Transaction state',
- `height` INT(4) NOT NULL COMMENT 'Transaction block height',
- `toaddress` VARCHAR(256) NOT NULL COMMENT 'Destination address',
- `amount` BIGINT(8) NOT NULL COMMENT 'Deposit amount',
- `tokenaddress` VARCHAR(256) NOT NULL COMMENT 'Token contract address',
- `ontologytxhash` VARCHAR(256) DEFAULT NULL COMMENT 'Transaction hash',
+ `txhash`  VARCHAR(256) NOT NULL COMMENT '交易hash',
+ `tt` INT(4) NOT NULL COMMENT '交易时间',
+ `state` INT(1) NOT NULL COMMENT '交易状态',
+ `height` INT(4) NOT NULL COMMENT '交易的高度',
+ `toaddress` VARCHAR(256) NOT NULL COMMENT '地址',
+ `amount` BIGINT(8) NOT NULL COMMENT 'deposit的金额',
+ `tokenaddress` VARCHAR(256) NOT NULL COMMENT '币地址',
+ `ontologytxhash` VARCHAR(256) DEFAULT NULL COMMENT '交易hash',
  PRIMARY KEY (`txhash`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `layer2tx`;
 CREATE TABLE `layer2tx` (
- `txhash`  VARCHAR(256) NOT NULL COMMENT 'Transaction hash',
- `state` INT(1) NOT NULL COMMENT 'Transaction state',
- `tt` INT(4) NOT NULL COMMENT 'Transaction time',
- `fee` BIGINT(8) NOT NULL COMMENT 'Transaction fee',
- `height` INT(4) NOT NULL COMMENT 'Transaction block height',
- `fromaddress` VARCHAR(256) NOT NULL COMMENT 'Source address',
- `tokenaddress` VARCHAR(256) NOT NULL COMMENT 'Token contract address',
- `toaddress` VARCHAR(256) NOT NULL COMMENT 'Destination address',
- `amount` BIGINT(8) NOT NULL COMMENT 'Deposit amount',
+ `txhash`  VARCHAR(256) NOT NULL COMMENT '交易hash',
+ `state` INT(1) NOT NULL COMMENT '交易状态',
+ `tt` INT(4) NOT NULL COMMENT '交易时间',
+ `fee` BIGINT(8) NOT NULL COMMENT '交易手续费',
+ `height` INT(4) NOT NULL COMMENT '交易的高度',
+ `fromaddress` VARCHAR(256) NOT NULL COMMENT '地址',
+ `tokenaddress` VARCHAR(256) NOT NULL COMMENT '执行的合约',
+ `toaddress` VARCHAR(256) NOT NULL COMMENT '地址',
+ `amount` BIGINT(8) NOT NULL COMMENT 'deposit的金额',
  PRIMARY KEY (`txhash`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `layer2commit`;
 CREATE TABLE `layer2commit` (
- `txhash`  VARCHAR(256) NOT NULL COMMENT 'Transaction hash',
- `state` INT(1)  DEFAULT 0 COMMENT 'Transaction state',
- `tt` INT(4) DEFAULT 0 COMMENT 'Transaction time',
- `fee` BIGINT(8) DEFAULT 0 COMMENT 'Transaction fee',
- `ontologyheight` INT(4) DEFAULT 0 COMMENT 'Transaction block height',
- `layer2height` INT(4) DEFAULT 0 COMMENT 'Transaction block height',
- `layer2msg` VARCHAR(1024) NOT NULL COMMENT 'layer2 msg',
+ `txhash`  VARCHAR(256) NOT NULL COMMENT '交易hash',
+ `layer2height` INT(4) DEFAULT 0 COMMENT '交易的高度',
+ `layer2msg` VARCHAR(1024) NOT NULL COMMENT 'laeyr2 msg',
  PRIMARY KEY (`txhash`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 ```
@@ -98,24 +94,25 @@ The `config.json` configuration file in the source code directory is used to sta
 ```json
 {
   "OntologyConfig":{
-    "RestURL":"http://polaris1.ont.io:20336",
-    "Layer2ContractAddress":"4229a92d90d446d1598e12e35698b681ae4d4642",
+    "RestURL":"http://polaris4.ont.io:20336",
+    "Layer2ContractAddress":"0aad0408c6e4615b2f3f90c0c8c912649619a379",
     "WalletFile":"./wallet_ontology.dat",
     "WalletPwd":"1",
-    "GasPrice":0,
-    "GasLimit":2000000
+    "GasPrice":2500,
+    "GasLimit":6000000
   },
   "Layer2Config":{
-    "RestURL":"http://localhost:40336",
+    "RestURL":"http://localhost:20336",
     "WalletFile":"./wallet_layer2.dat",
     "WalletPwd":"1",
+    "MinOngLimit": 100000000,
     "GasPrice":0,
     "GasLimit":2000000
   },
   "DBConfig":{
     "ProjectDBUrl":"127.0.0.1:3306",
     "ProjectDBUser":"root",
-    "ProjectDBPassword":"root1234",
+    "ProjectDBPassword":"root",
     "ProjectDBName":"layer2"
   }
 }

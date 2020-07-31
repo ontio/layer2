@@ -19,6 +19,8 @@ DepositEvent = RegisterAction('deposit', 'depositId', 'fromAddress', 'amount', '
 
 WithdrawEvent = RegisterAction('withdraw', 'withdrawId', 'amount', 'toAddress', 'height', 'status', 'assetAddress')
 
+INITED = 'Initialized'
+
 DEPOSIT_PREFIX = 'deposit'
 
 WITHDRAW_PREFIX = 'withdraw'
@@ -32,8 +34,6 @@ CURRENT_HEIGHT = 'currentHeight'
 Current_STATE_PREFIX = 'stateRoot'
 
 CONFRIM_HEIGHT = 'confirmHeight'
-
-INITED = 'Initialized'
 
 OPERATOR_ADDRESS = 'operator'
 
@@ -65,10 +65,24 @@ def Main(operation, args):
         assetAddresses = args[6]
         return updateState(stateRootHash, height, version, depositIds, withdrawAmounts, toAddresses, assetAddresses)
 
+    if operation == 'updateStates':
+        assert (len(args) == 7)
+        stateRootHash = args[0]
+        height = args[1]
+        version = args[2]
+        depositIds = args[3]
+        withdrawAmounts = args[4]
+        toAddresses = args[5]
+        assetAddresses = args[6]
+        return updateStates(stateRootHash, height, version, depositIds, withdrawAmounts, toAddresses, assetAddresses)
+
     if operation == 'getStateRootByHeight':
         assert (len(args) == 1)
         height = args[0]
         return getStateRootByHeight(height)
+    if operation == 'getCurrentHeight':
+        assert (len(args) == 0)
+        return getCurrentHeight()
     return True
 
 
@@ -171,6 +185,12 @@ def updateState(stateRootHash, height, version, depositIds, withdrawAmounts, toA
     Notify(['updateState', stateRootHash, height, version, depositIds, withdrawAmounts, toAddresses, assetAddresses])
     return True
 
+## 更新全局的状态根，合约需要验证签名的有效性
+def updateStates(stateRootHash, height, version, depositIds, withdrawAmounts, toAddresses, assetAddresses):
+    for i in range(len(stateRootHash)):
+        updateState(stateRootHash[i], height[i], version[i], depositIds[i], withdrawAmounts[i], toAddresses[i], assetAddresses[i])
+    return True
+
 
 ## 根据高度获取状态根信息
 def getStateRootByHeight(height):
@@ -179,6 +199,11 @@ def getStateRootByHeight(height):
         stateRoot = Deserialize(stateRootInfo)
         return stateRoot
     return []
+
+
+def getCurrentHeight():
+    height = Get(GetContext(), CURRENT_HEIGHT)
+    return height
 
 
 def _updateDepositState(depositIds):
