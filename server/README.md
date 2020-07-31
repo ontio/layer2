@@ -4,6 +4,17 @@ English|[中文](README_CN.md)
 
 The Layer2 server consolidates Layer2 transaction information and provider query service. This service facilitiates fetching transaction address related details and other transaction records such as deposit and withdrawal history.
 
+## Compilation
+
+Run the following command in the main directory where the `main.go` file is located.
+
+```go
+cd $gopath/src/github.com/ontio
+git clone https://github.com/ontio/layer2/
+cd ./layer2/server
+go build
+```
+
 ## Configuration
 
 ```json
@@ -30,14 +41,6 @@ The Layer2 server consolidates Layer2 transaction information and provider query
 | explorerdb_name      | Database name                                     |
 
 The database that the Layer2 server accesses is the same database as that of the Layer2 operator. The database is configured to be used to by the Operator.
-
-## Compilation
-
-Run the following command in the main directory where the `main.go` file is located.
-
-```go
-go build
-```
 
 ## Server API
 

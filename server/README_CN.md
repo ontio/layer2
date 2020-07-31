@@ -4,6 +4,15 @@
 
 Layer2 Server收集Layer2的交易信息，提供查询服务，包括查询指定地址的历史交易记录，查询指定地址的deposit和withdraw记录。
 
+## 编译
+
+```
+cd $gopath/src/github.com/ontio
+git clone https://github.com/ontio/layer2/
+cd ./layer2/server
+go build
+```
+
 ## 配置说明
 
 ```
@@ -19,12 +28,6 @@ Layer2 Server收集Layer2的交易信息，提供查询服务，包括查询指�
 }
 ```
 Layer2 Server需要访问的数据库和Layer2 Operator的数据库是同一个数据库，数据库配置为Operator使用的数据库。
-
-## 编译
-
-```
-go build
-```
 
 ## API
 
