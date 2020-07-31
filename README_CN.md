@@ -44,7 +44,7 @@ Operator是Layer2的安全守护程序，负责监听Ontology主链是否有到L
 
 5.	主链合约执行deposit释放操作，修改deposit资金状态为“已释放”。
 
-<div align=center><img width="550" height="450" src="doc/pic/user_deposit.png"/></div>
+<div align=center><img width="550" height="450" src="doc/pic/user_deposit_cn.png"/></div>
 
 ### Withdraw到Ontology
 
@@ -58,7 +58,7 @@ Operator是Layer2的安全守护程序，负责监听Ontology主链是否有到L
 
 5.	在State确认后，主链合约执行Withdraw释放请求，给目标账户转账，同时设置withdraw记录为“已释放“
 
-<div align=center><img width="750" height="450" src="doc/pic/user_withdraw.png"/></div>
+<div align=center><img width="750" height="450" src="doc/pic/user_withdraw_cn.png"/></div>
 
 ###	用户Layer交易
 
@@ -72,7 +72,7 @@ Operator是Layer2的安全守护程序，负责监听Ontology主链是否有到L
 
 ### 用户Layer交易
 
-<div align=center><img width="550" height="450" src="doc/pic/user_transfer.png"/></div>
+<div align=center><img width="550" height="450" src="doc/pic/user_transfer_cn.png"/></div>
 
 ### 存储以及验证
 
@@ -88,7 +88,7 @@ Operator是Layer2的安全守护程序，负责监听Ontology主链是否有到L
 
 6. 用户基于存储Proof和Layer2 State来验证Key的存储Value。
 
-<div align=center><img width="650" height="450" src="doc/pic/user_store.png"/></div>
+<div align=center><img width="650" height="450" src="doc/pic/user_store_cn.png"/></div>
 
 ## 安装
 
