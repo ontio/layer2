@@ -81,42 +81,8 @@ CREATE TABLE `layer2commit` (
 ### 编译
 
 ```
-go build main.go
+cd $gopath/src/github.com/ontio
+git clone https://github.com/ontio/layer2/
+cd ./layer2/operator
+go build
 ```
-
-### 配置
-
-在源码目录下有config.json配置文件，是operator启动的配置文件。
-```
-{
-  "OntologyConfig":{
-    "RestURL":"http://polaris4.ont.io:20336",
-    "Layer2ContractAddress":"0aad0408c6e4615b2f3f90c0c8c912649619a379",
-    "WalletFile":"./wallet_ontology.dat",
-    "WalletPwd":"1",
-    "GasPrice":2500,
-    "GasLimit":6000000
-  },
-  "Layer2Config":{
-    "RestURL":"http://localhost:20336",
-    "WalletFile":"./wallet_layer2.dat",
-    "WalletPwd":"1",
-    "MinOngLimit": 100000000,
-    "GasPrice":0,
-    "GasLimit":2000000
-  },
-  "DBConfig":{
-    "ProjectDBUrl":"127.0.0.1:3306",
-    "ProjectDBUser":"root",
-    "ProjectDBPassword":"root",
-    "ProjectDBName":"layer2"
-  }
-}
-```
-主要包括：
-
-ontology的访问配置：节点地址、以上第二步部署的layer2合约地址，以上第一步生成的ontology钱包文件wallet_ontology.dat及其密码。
-
-Node的访问配置：节点地址、以上第一步生成的Layer2钱包文件wallet_layer2.dat及其密码。
-
-Mysql数据库访问配置：数据库URL、用户名和密码以及Layer2数据库名称。

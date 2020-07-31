@@ -90,8 +90,13 @@ Operator是Layer2的安全守护程序，负责监听Ontology主链是否有到L
 
 <div align=center><img width="650" height="450" src="doc/pic/user_store.png"/></div>
 
+## 安装
+
+安装手册 [layer2部署指导](https://github.com/ontio/layer2/blob/master/doc/Layer2_User_Deployment_Guide_CN.md)
 
 ## 使用
+
+请使用[Layer2的SDK](https://github.com/ontio/ontology-go-sdk/tree/layer2)
 
 以下是一个示例，从Layer2的合约7680bc3227089ee6ac790be698e88bcd0be04609中查询存储的Value并验证。
 

@@ -88,8 +88,13 @@ With each new Layer2 block the state is updated and each new key inserted into t
 
 <div align=center><img width="650" height="450" src="doc/pic/user_store.png"/></div>
 
+## install
+
+please reference [layer2 deployment guide](https://github.com/ontio/layer2/blob/master/doc/Layer2_User_Deployment_Guide.md)
 
 ## Usage
+
+Please use [Layer2 sdk](https://github.com/ontio/ontology-go-sdk/tree/layer2)
 
 Here is an illustration that demonstrates fetching and verifying the stored value from the Layer2 contract `7680bc3227089ee6ac790be698e88bcd0be04609`.
 

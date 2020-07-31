@@ -84,42 +84,8 @@ CREATE TABLE `layer2commit` (
 Run the following command in the directory with the `main.go` file.
 
 ```go
-go build main.go
+cd $gopath/src/github.com/ontio
+git clone https://github.com/ontio/layer2/
+cd ./layer2/operator
+go build
 ```
-
-### Configuration
-
-The `config.json` configuration file in the source code directory is used to start the operator.
-
-```json
-{
-  "OntologyConfig":{
-    "RestURL":"http://polaris4.ont.io:20336",
-    "Layer2ContractAddress":"0aad0408c6e4615b2f3f90c0c8c912649619a379",
-    "WalletFile":"./wallet_ontology.dat",
-    "WalletPwd":"1",
-    "GasPrice":2500,
-    "GasLimit":6000000
-  },
-  "Layer2Config":{
-    "RestURL":"http://localhost:20336",
-    "WalletFile":"./wallet_layer2.dat",
-    "WalletPwd":"1",
-    "MinOngLimit": 100000000,
-    "GasPrice":0,
-    "GasLimit":2000000
-  },
-  "DBConfig":{
-    "ProjectDBUrl":"127.0.0.1:3306",
-    "ProjectDBUser":"root",
-    "ProjectDBPassword":"root",
-    "ProjectDBName":"layer2"
-  }
-}
-```
-
-As illustrated by the above sample configuration, the `config.json` file contains access parameters to:
-
-- **Ontology:** Node address, Layer2 contract address, Ontology `.dat` wallet file, and the wallet password.
-- **Node:** Node address, Layer2 `.dat` wallet file, and the wallet password.
-- **MySQL:** Database URL, username, password, and database name.
