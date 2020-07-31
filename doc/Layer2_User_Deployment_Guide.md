@@ -82,7 +82,7 @@ Sample `stateRoot`:
 
 ## Installing the Collector - Node
 
-Please refer to the Node program guide and download and compile the source code to run the node. Please reference [Layer2 Node install guide](https://github.com/ontio/ontology/blob/layer2/README.md), The node, `config.json` configuration file, and the `wallet_layer2.dat` Layer2 wallet file to the machine where the node is to be deployed. After uploading successfully, rename the wallet file from `wallet_layer2.dat` to `wallet.dat`.
+Please refer to the Node program guide and download and compile the source code to run the node. Please reference [Layer2 Node install guide](https://github.com/ontio/ontology/blob/layer2/README.md). After that, upload the node, `config.json` configuration file, and the `wallet_layer2.dat` Layer2 wallet file to the machine where the node is to be deployed. After uploading successfully, rename the wallet file from `wallet_layer2.dat` to `wallet.dat`.
 
 Use the following command to start the node:
 
@@ -171,7 +171,7 @@ CREATE TABLE `layer2commit` (
 
 ### Deploying the Operator
 
-Please refer to the operator guide and download and compile the source code. Please reference [Operator install guide](https://github.com/ontio/layer2/blob/master/operator/README.md) The operator, `config.json` configuration file, and the `wallet_layer2.dat` and `wallet_ontology.dat` wallet files to the machine on which the operator is to be deployed.
+Please refer to the operator guide and download and compile the source code. Please reference [Operator install guide](https://github.com/ontio/layer2/blob/master/operator/README.md). After that, upload the operator, `config.json` configuration file, and the `wallet_layer2.dat` and `wallet_ontology.dat` wallet files to the machine on which the operator is to be deployed.
 
 Download and set up the operator as described in the guide and compile the source code.
 
@@ -225,7 +225,7 @@ nohup ./Operator &
 
 Currently, the Layer2 transaction query service needs to be deployed on the same node as the operator service.
 
-Download and compile the server source code as per the server user guide, please reference [Layer2 server install guide](https://github.com/ontio/layer2/blob/master/server/README.md), and then upload the server, the `config.json` configuration file to the machine where server is to be deployed.
+Download and compile the server source code as per the server user guide. Please reference [Layer2 server install guide](https://github.com/ontio/layer2/blob/master/server/README.md). After that, upload then upload the server, the `config.json` configuration file to the machine where server is to be deployed.
 
 Sample server configuration:
 

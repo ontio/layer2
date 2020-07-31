@@ -44,7 +44,7 @@ With each new Layer2 block the state is updated and each new key inserted into t
 
 5.	The main chain releases the deposit amount and updates the deposit amount state to "released".
 
-<div align=center><img width="360" height="450" src="doc/pic/user_deposit.png"/></div>
+<div align=center><img width="550" height="450" src="doc/pic/user_deposit.png"/></div>
 
 ### Withdraw to Ontology
 
@@ -58,7 +58,7 @@ With each new Layer2 block the state is updated and each new key inserted into t
 
 5.	Once the state is confirmed, The main chain processes and executes the withdrawal release request, sends the withdrawal amount to the target account, and sets the withdraw state to "released".
 
-<div align=center><img width="499" height="450" src="doc/pic/user_withdraw.png"/></div>
+<div align=center><img width="850" height="450" src="doc/pic/user_withdraw.png"/></div>
 
 ###	User Layer Transactions
 
@@ -70,7 +70,7 @@ With each new Layer2 block the state is updated and each new key inserted into t
 
 4.	System then awaits state confirmation.
 
-<div align=center><img width="650" height="450" src="doc/pic/user_transfer.png"/></div>
+<div align=center><img width="550" height="450" src="doc/pic/user_transfer.png"/></div>
 
 ### Storage and Verification
 
@@ -90,11 +90,18 @@ With each new Layer2 block the state is updated and each new key inserted into t
 
 ## install
 
-please reference [layer2 deployment guide](https://github.com/ontio/layer2/blob/master/doc/Layer2_User_Deployment_Guide.md)
+Please reference [Layer2 User Deployment Guide](https://github.com/ontio/layer2/blob/master/doc/Layer2_User_Deployment_Guide.md)
+
+## Service
+
+Network|Layer2 Node|Layer2 Contract
+:--:|:--:|:--:
+MainNet|http://127.0.0.1:20336|0aad0408c6e4615b2f3f90c0c8c912649619a379
+TestNet|http://127.0.0.1:20336|0aad0408c6e4615b2f3f90c0c8c912649619a379
 
 ## Usage
 
-Please use [Layer2 sdk](https://github.com/ontio/ontology-go-sdk/tree/layer2)
+Please use [Layer2 SDK](https://github.com/ontio/ontology-go-sdk/tree/layer2)
 
 Here is an illustration that demonstrates fetching and verifying the stored value from the Layer2 contract `7680bc3227089ee6ac790be698e88bcd0be04609`.
 

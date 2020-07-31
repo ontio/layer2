@@ -82,7 +82,7 @@ confirmHeight指定了用户在Layer2进行withdraw后，需要多少个状态�
 
 ## 安装收集程序Node
 
-用户需要按照Node程序的指导手册下载和编译Node，请参考[Layer2 Node安装指导](https://github.com/ontio/ontology/blob/layer2/README_CN.md),将Node、配置文件config.json以及上面准备的layer2钱包文件wallet_layer2.dat一起上传到部署机器上，重命名wallet_layer2.dat为wallet.dat。
+用户需要按照Node程序的指导手册下载和编译Node，请参考[Layer2 Node安装指导](https://github.com/ontio/ontology/blob/layer2/README_CN.md)，安装完成后，将Node、配置文件config.json以及上面准备的layer2钱包文件wallet_layer2.dat一起上传到部署机器上，重命名wallet_layer2.dat为wallet.dat。
 
 使用以下命令来启动Node：
 ```
@@ -167,7 +167,7 @@ CREATE TABLE `layer2commit` (
 ```
 
 ### 部署Operator
-用户按照Operator的指导手册下载和编译Operator，请参考[Operator安装指导](https://github.com/ontio/layer2/blob/master/operator/README_CN.md), 将Operator、配置文件config.json、准备的钱包文件wallet_layer2.dat和wallet_ontology.dat一起上传到部署机器。
+用户按照Operator的指导手册下载和编译Operator，请参考[Operator安装指导](https://github.com/ontio/layer2/blob/master/operator/README_CN.md), 安装完成后，将Operator、配置文件config.json、准备的钱包文件wallet_layer2.dat和wallet_ontology.dat一起上传到部署机器。
 
 修改Operator配置：
 ```
@@ -219,7 +219,7 @@ nohup ./Operator &
 
 目前Layer2交易查询服务必须和Operator服务部署在同一个节点。
 
-按照Server的用户指导手册下载和编译Server，请参考[Layer2查询服务安装指导](https://github.com/ontio/layer2/blob/master/server/README_CN.md)，将Server和配置文件config.json上传到部署机器，修改Server的配置：
+按照Server的用户指导手册下载和编译Server，请参考[Layer2查询服务安装指导](https://github.com/ontio/layer2/blob/master/server/README_CN.md)，安装完成后，将Server和配置文件config.json上传到部署机器，修改Server的配置：
 
 ```
 {
