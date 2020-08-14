@@ -19,11 +19,11 @@ package main
 
 import (
 	"fmt"
-	sdk "github.com/ontio/ontology-go-sdk"
+	sdk "github.com/ontio/layer2/go-sdk"
 
 	"encoding/binary"
 	"github.com/ontio/layer2/go-sdk/utils"
-	"github.com/ontio/ontology/common"
+	"github.com/ontio/layer2/node/common"
 	"io/ioutil"
 	"time"
 )

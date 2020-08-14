@@ -26,7 +26,7 @@ import (
 	base58 "github.com/itchyny/base58-go"
 	"github.com/ontio/ontology-crypto/keypair"
 	s "github.com/ontio/ontology-crypto/signature"
-	"github.com/ontio/ontology/core/types"
+	"github.com/ontio/layer2/node/core/types"
 	"golang.org/x/crypto/ripemd160"
 	"math/big"
 )

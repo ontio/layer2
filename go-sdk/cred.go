@@ -27,8 +27,8 @@ import (
 	"time"
 
 	"github.com/ontio/ontology-crypto/keypair"
-	"github.com/ontio/ontology/common"
-	"github.com/ontio/ontology/core/signature"
+	"github.com/ontio/layer2/node/common"
+	"github.com/ontio/layer2/node/core/signature"
 	"github.com/satori/go.uuid"
 )
 

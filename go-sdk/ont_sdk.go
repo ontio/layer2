@@ -24,7 +24,7 @@ import (
 	"fmt"
 	"github.com/ontio/go-bip32"
 	"github.com/ontio/layer2/go-sdk/bip44"
-	"github.com/ontio/ontology/smartcontract/event"
+	"github.com/ontio/layer2/node/smartcontract/event"
 	"github.com/tyler-smith/go-bip39"
 	"io"
 	"math/rand"
@@ -34,11 +34,11 @@ import (
 	"github.com/ontio/layer2/go-sdk/client"
 	common3 "github.com/ontio/layer2/go-sdk/common"
 	"github.com/ontio/layer2/go-sdk/utils"
-	"github.com/ontio/ontology/common"
-	common2 "github.com/ontio/ontology/common"
-	"github.com/ontio/ontology/common/constants"
-	"github.com/ontio/ontology/core/payload"
-	"github.com/ontio/ontology/core/types"
+	"github.com/ontio/layer2/node/common"
+	common2 "github.com/ontio/layer2/node/common"
+	"github.com/ontio/layer2/node/common/constants"
+	"github.com/ontio/layer2/node/core/payload"
+	"github.com/ontio/layer2/node/core/types"
 )
 
 func init() {

@@ -20,11 +20,11 @@ package ontology_go_sdk
 import (
 	"fmt"
 	sdkcom "github.com/ontio/layer2/go-sdk/common"
-	"github.com/ontio/ontology/cmd/utils"
-	"github.com/ontio/ontology/common"
-	"github.com/ontio/ontology/core/payload"
-	"github.com/ontio/ontology/core/types"
-	httpcom "github.com/ontio/ontology/http/base/common"
+	"github.com/ontio/layer2/node/cmd/utils"
+	"github.com/ontio/layer2/node/common"
+	"github.com/ontio/layer2/node/core/payload"
+	"github.com/ontio/layer2/node/core/types"
+	httpcom "github.com/ontio/layer2/node/http/base/common"
 )
 
 type NeoVMContract struct {

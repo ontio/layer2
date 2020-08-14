@@ -22,10 +22,10 @@ import (
 	"encoding/json"
 	"fmt"
 	sdkcom "github.com/ontio/layer2/go-sdk/common"
-	"github.com/ontio/ontology/common"
-	"github.com/ontio/ontology/core/payload"
-	"github.com/ontio/ontology/core/types"
-	bc "github.com/ontio/ontology/http/base/common"
+	"github.com/ontio/layer2/node/common"
+	"github.com/ontio/layer2/node/core/payload"
+	"github.com/ontio/layer2/node/core/types"
+	bc "github.com/ontio/layer2/node/http/base/common"
 )
 
 func GetVersion(data []byte) (string, error) {

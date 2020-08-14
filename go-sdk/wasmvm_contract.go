@@ -21,11 +21,11 @@ import (
 	"encoding/hex"
 	"fmt"
 	sdkcom "github.com/ontio/layer2/go-sdk/common"
-	utils2 "github.com/ontio/ontology/cmd/utils"
-	"github.com/ontio/ontology/common"
-	"github.com/ontio/ontology/core/payload"
-	"github.com/ontio/ontology/core/types"
-	"github.com/ontio/ontology/core/utils"
+	utils2 "github.com/ontio/layer2/node/cmd/utils"
+	"github.com/ontio/layer2/node/common"
+	"github.com/ontio/layer2/node/core/payload"
+	"github.com/ontio/layer2/node/core/types"
+	"github.com/ontio/layer2/node/core/utils"
 )
 
 type WasmVMContract struct {

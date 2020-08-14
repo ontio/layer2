@@ -24,8 +24,8 @@ import (
 	"github.com/ontio/ontology-crypto/ec"
 	"github.com/ontio/ontology-crypto/keypair"
 	s "github.com/ontio/ontology-crypto/signature"
-	"github.com/ontio/ontology/account"
-	"github.com/ontio/ontology/core/types"
+	"github.com/ontio/layer2/node/account"
+	"github.com/ontio/layer2/node/core/types"
 )
 
 type Signer interface {

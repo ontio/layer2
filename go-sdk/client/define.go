@@ -19,7 +19,7 @@ package client
 
 import (
 	"encoding/json"
-	"github.com/ontio/ontology/core/types"
+	"github.com/ontio/layer2/node/core/types"
 	"time"
 )
 

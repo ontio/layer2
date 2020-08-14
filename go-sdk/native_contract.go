@@ -23,14 +23,14 @@ import (
 	"github.com/ontio/ontology-crypto/keypair"
 	sdkcom "github.com/ontio/layer2/go-sdk/common"
 	"github.com/ontio/layer2/go-sdk/utils"
-	"github.com/ontio/ontology/account"
-	"github.com/ontio/ontology/common"
-	"github.com/ontio/ontology/core/types"
-	cutils "github.com/ontio/ontology/core/utils"
-	"github.com/ontio/ontology/smartcontract/service/native/global_params"
-	"github.com/ontio/ontology/smartcontract/service/native/ont"
-	"github.com/ontio/ontology/smartcontract/service/native/ontid"
-	nutils "github.com/ontio/ontology/smartcontract/service/native/utils"
+	"github.com/ontio/layer2/node/account"
+	"github.com/ontio/layer2/node/common"
+	"github.com/ontio/layer2/node/core/types"
+	cutils "github.com/ontio/layer2/node/core/utils"
+	"github.com/ontio/layer2/node/smartcontract/service/native/global_params"
+	"github.com/ontio/layer2/node/smartcontract/service/native/ont"
+	"github.com/ontio/layer2/node/smartcontract/service/native/ontid"
+	nutils "github.com/ontio/layer2/node/smartcontract/service/native/utils"
 )
 
 var (
