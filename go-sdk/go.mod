@@ -15,5 +15,3 @@ require (
 	github.com/tyler-smith/go-bip39 v1.0.2
 	golang.org/x/crypto v0.0.0-20200311171314-f7b00557c8c4
 )
-
-replace github.com/ontio/layer2/node => github.com/blockchain-develop/layer2/node v0.0.0-20200814032206-96b3fde6abf7
