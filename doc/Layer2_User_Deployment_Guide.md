@@ -87,7 +87,7 @@ Please refer to the Node program guide and download and compile the source code 
 Use the following command to start the node:
 
 ```shell
-echo '1' | ./ontology --layer2mode true --testmode-gen-block-time 6 --rpcport 20336 --nodeport 20338 --ws --wsport 20335 --rest --restport 20334 --loglevel 1 > log &
+echo '1' |./ontology --minonglimit 0 --rpcport 20336 --nodeport 20338 --ws --wsport 20335 --rest --restport 20334 --layer2mode-gen-block-time 2 --layer2mode true --loglevel 1 --config config.json > log &
 ```
 
 Enter the password as `1` when prompted to start the node service in the back end.

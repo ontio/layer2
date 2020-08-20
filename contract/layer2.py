@@ -21,9 +21,9 @@ WithdrawEvent = RegisterAction('withdraw', 'withdrawId', 'amount', 'toAddress', 
 
 INITED = 'Initialized'
 
-DEPOSIT_PREFIX = 'deposit'
-
 WITHDRAW_PREFIX = 'withdraw'
+
+DEPOSIT_PREFIX = 'deposit'
 
 CURRENT_DEPOSIT_ID = 'currentDepositId'
 
