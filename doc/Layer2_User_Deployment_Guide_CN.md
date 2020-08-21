@@ -86,7 +86,7 @@ confirmHeight指定了用户在Layer2进行withdraw后，需要多少个状态�
 
 使用以下命令来启动Node：
 ```
-echo '1' | ./ontology --layer2mode true --testmode-gen-block-time 6 --rpcport 20336 --nodeport 20338 --ws --wsport 20335 --rest --restport 20334 --loglevel 1 > log &
+echo '1' |./ontology --minonglimit 0 --rpcport 20336 --nodeport 20338 --ws --wsport 20335 --rest --restport 20334 --layer2mode-gen-block-time 2 --layer2mode true --loglevel 1 --config config.json > log &
 ```
 以上命令会在后台启动Node服务，输入钱包文件wallet.dat的密码'1'来启动Node。
 

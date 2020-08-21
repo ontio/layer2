@@ -26,7 +26,6 @@ import (
 	"github.com/ontio/layer2/operator/log"
 	ontology_sdk "github.com/ontio/ontology-go-sdk"
 	ontology_sdk_common "github.com/ontio/ontology-go-sdk/common"
-	"github.com/ontio/ontology-go-sdk/utils"
 	ontology_common "github.com/ontio/ontology/common"
 	ontology_types "github.com/ontio/ontology/core/types"
 	"time"
@@ -39,7 +38,7 @@ type Layer2Operator struct {
 	ontologyAccount    *ontology_sdk.Account
 	ontologyChainInfo  *ChainInfo
 
-	layer2Sdk          *ontology_sdk.OntologySdk
+	layer2Sdk          *ontology_sdk.Layer2Sdk
 	layer2Account      *ontology_sdk.Account
 	layer2ChainInfo    *ChainInfo
 
@@ -49,10 +48,10 @@ type Layer2Operator struct {
 }
 
 func NewLayer2Operator(servCfg *config.ServiceConfig) (*Layer2Operator, error) {
-	ontologySdk := ontology_sdk.NewOntologySdk(utils.ONTOLOGY_SDK)
-	ontologySdk.NewRpcClient(utils.ONTOLOGY_SDK).SetAddress(servCfg.OntologyConfig.RestURL)
-	layer2Sdk := ontology_sdk.NewOntologySdk(utils.LAYER2_SDK)
-	layer2Sdk.NewRpcClient(utils.LAYER2_SDK).SetAddress(servCfg.Layer2Config.RestURL)
+	ontologySdk := ontology_sdk.NewOntologySdk()
+	ontologySdk.NewRpcClient().SetAddress(servCfg.OntologyConfig.RestURL)
+	layer2Sdk := ontology_sdk.NewLayer2Sdk()
+	layer2Sdk.NewRpcClient().SetAddress(servCfg.Layer2Config.RestURL)
 	return &Layer2Operator{
 		exitChan:           make(chan int),
 		depositChain:       make(chan []*Deposit),
@@ -299,9 +298,12 @@ func (this *Layer2Operator) depositLoop() {
 
 func (this *Layer2Operator) commitDeposit2Layer2(deposit *Deposit) error {
 	log.Infof("commit deposit to layer2: %s", deposit.Dump())
-	toAddr, _ := ontology_common.AddressFromBase58(deposit.FromAddress)
 	var tx *ontology_types.MutableTransaction
 	var err error
+	toAddr, err := ontology_common.AddressFromBase58(deposit.FromAddress)
+	if err != nil {
+		return fmt.Errorf("to address is not right!")
+	}
 	if deposit.TokenAddress == ONT_CONTRACT_ADDRESS {
 		tx, err = this.layer2Sdk.Native.Ont.NewTransferTransaction(0, 20000, ontology_common.ADDRESS_EMPTY, toAddr, deposit.Amount)
 		if err != nil {
@@ -312,6 +314,8 @@ func (this *Layer2Operator) commitDeposit2Layer2(deposit *Deposit) error {
 		if err != nil {
 			return err
 		}
+	} else {
+		return fmt.Errorf("token is not supported!")
 	}
 	this.layer2Sdk.SetPayer(tx, this.layer2Account.Address)
 	err = this.layer2Sdk.SignToTransaction(tx, this.layer2Account)
@@ -386,7 +390,7 @@ func (this *Layer2Operator) MonitorLayer2Chain() {
 }
 
 func (this *Layer2Operator) parseLayer2ChainBlock(chain *ChainInfo) (*Layer2CommitMsg, error) {
-	block, err := this.layer2Sdk.GetBlockByHeight(chain.Height)
+	block, err := this.layer2Sdk.GetLayer2BlockByHeight(chain.Height)
 	if err != nil {
 		return nil, err
 	}
