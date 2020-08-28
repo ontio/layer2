@@ -103,7 +103,7 @@ TestNet|http://152.32.217.204:40336|10c1b2b4e17ea5ed604d6cbff311330dd702bf97
 
 ## 使用
 
-请使用[Layer2 SDK](https://github.com/ontio/ontology-go-sdk/tree/layer2)
+请使用[Layer2 SDK](https://github.com/ontio/ontology-go-sdk)
 
 以下是一个示例，从Layer2的合约7680bc3227089ee6ac790be698e88bcd0be04609中查询存储的Value并验证。
 

@@ -101,7 +101,7 @@ TestNet|http://152.32.217.204:40336|10c1b2b4e17ea5ed604d6cbff311330dd702bf97
 
 ## Usage
 
-Please use [Layer2 SDK](https://github.com/ontio/ontology-go-sdk/tree/layer2)
+Please use [Layer2 SDK](https://github.com/ontio/ontology-go-sdk)
 
 Here is an illustration that demonstrates fetching and verifying the stored value from the Layer2 contract `7680bc3227089ee6ac790be698e88bcd0be04609`.
 
