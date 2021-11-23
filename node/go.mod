@@ -6,15 +6,13 @@ require (
 	github.com/JohnCGriffin/overflow v0.0.0-20170615021017-4d914c927216
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/emirpasic/gods v1.12.0 // indirect
-	github.com/ethereum/go-ethereum v1.9.13
-	github.com/gogo/protobuf v1.3.1 // indirect
-	github.com/gorilla/websocket v1.4.1
+	github.com/ethereum/go-ethereum v1.10.10
+	github.com/gorilla/websocket v1.4.2
 	github.com/gosuri/uilive v0.0.3 // indirect
 	github.com/gosuri/uiprogress v0.0.1
-	github.com/hashicorp/golang-lru v0.5.3
+	github.com/hashicorp/golang-lru v0.5.5-0.20210104140557-80c98217689d
 	github.com/howeyc/gopass v0.0.0-20190910152052-7cb4b85ec19c
 	github.com/itchyny/base58-go v0.1.0
-	github.com/mattn/go-isatty v0.0.10 // indirect
 	github.com/ontio/ontology-crypto v1.0.9
 	github.com/ontio/ontology-eventbus v0.9.1
 	github.com/ontio/wagon v0.4.1
@@ -22,14 +20,14 @@ require (
 	github.com/pborman/uuid v1.2.0
 	github.com/prometheus/client_golang v1.5.0
 	github.com/scylladb/go-set v1.0.2
-	github.com/stretchr/testify v1.5.1
-	github.com/syndtr/goleveldb v1.0.1-0.20190923125748-758128399b1d
+	github.com/stretchr/testify v1.7.0
+	github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
 	github.com/tendermint/iavl v0.13.2
 	github.com/tendermint/tm-db v0.5.0
 	github.com/urfave/cli v1.22.1
 	github.com/valyala/bytebufferpool v1.0.0
-	golang.org/x/crypto v0.0.0-20200311171314-f7b00557c8c4
-	golang.org/x/net v0.0.0-20200301022130-244492dfa37a
+	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
+	golang.org/x/net v0.0.0-20210805182204-aaa1db679c0d
 )
 
 replace (
